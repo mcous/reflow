@@ -1,6 +1,6 @@
-update=11/2/2013 4:34:58 PM
+update=11/2/2013 11:54:36 PM
 version=1
-last_client=kicad
+last_client=eeschema
 [cvpcb]
 version=1
 NetIExt=net
@@ -43,6 +43,8 @@ LibName13=led
 LibName14=dip_sockets
 LibName15=pga_sockets
 LibName16=valves
+[general]
+version=1
 [eeschema]
 version=1
 LibDir=../../kicad-lib/components
@@ -63,6 +65,5 @@ LibName8=micrel-ic
 LibName9=microchip-ic
 LibName10=standard
 LibName11=stmicro-mcu
-LibName12=ti-ic
-[general]
-version=1
+LibName12=sharp-relay
+LibName13=ti-ic
