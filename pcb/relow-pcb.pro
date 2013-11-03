@@ -1,4 +1,4 @@
-update=11/3/2013 1:59:46 AM
+update=11/3/2013 10:55:25 AM
 version=1
 last_client=eeschema
 [cvpcb]
@@ -67,3 +67,4 @@ LibName10=standard
 LibName11=stmicro-mcu
 LibName12=sharp-relay
 LibName13=ti-ic
+LibName14=sparkfun
