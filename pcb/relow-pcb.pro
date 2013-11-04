@@ -1,4 +1,4 @@
-update=11/3/2013 10:55:25 AM
+update=11/3/2013 6:58:10 PM
 version=1
 last_client=eeschema
 [cvpcb]
@@ -52,7 +52,7 @@ NetFmtName=
 RptD_X=0
 RptD_Y=100
 RptLab=1
-LabSize=60
+LabSize=80
 [eeschema/libraries]
 LibName1=power
 LibName2=analog-ic
@@ -68,3 +68,4 @@ LibName11=stmicro-mcu
 LibName12=sharp-relay
 LibName13=ti-ic
 LibName14=sparkfun
+LibName15=ftdi-ic
