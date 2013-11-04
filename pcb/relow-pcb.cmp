@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2013-07-07 BZR 4022)-stable date = 11/3/2013 10:33:44 PM
+Cmp-Mod V01 Created by CvPcb (2013-07-07 BZR 4022)-stable date = 11/4/2013 1:35:57 AM
 
 BeginCmp
 TimeStamp = /5275E0D8;
@@ -116,7 +116,7 @@ BeginCmp
 TimeStamp = /527714E7;
 Reference = IC3;
 ValeurCmp = FT230X_SOP;
-IdModule  = ;
+IdModule  = SSOP16;
 EndCmp
 
 BeginCmp
@@ -137,7 +137,7 @@ BeginCmp
 TimeStamp = /5275D7C5;
 Reference = K1;
 ValeurCmp = S212S01;
-IdModule  = ;
+IdModule  = SHARP_SIP_SSR;
 EndCmp
 
 BeginCmp
@@ -179,7 +179,7 @@ BeginCmp
 TimeStamp = /527687CB;
 Reference = LED6;
 ValeurCmp = 7-SEG_4-NUM-DISPLAY;
-IdModule  = ;
+IdModule  = SF_4-DIGIT_7-SEGMENT_CC;
 EndCmp
 
 BeginCmp
@@ -190,38 +190,38 @@ IdModule  = 2x3-array;
 EndCmp
 
 BeginCmp
-TimeStamp = /52768E10;
+TimeStamp = /52776182;
 Reference = Q1;
 ValeurCmp = MMBT4401;
-IdModule  = ;
+IdModule  = SOT23;
 EndCmp
 
 BeginCmp
-TimeStamp = /5275F500;
+TimeStamp = /527761CB;
 Reference = Q2;
 ValeurCmp = MMBT4401;
-IdModule  = ;
+IdModule  = SOT23;
 EndCmp
 
 BeginCmp
-TimeStamp = /52769259;
+TimeStamp = /527761B9;
 Reference = Q3;
 ValeurCmp = MMBT4401;
-IdModule  = ;
+IdModule  = SOT23;
 EndCmp
 
 BeginCmp
-TimeStamp = /527692D0;
+TimeStamp = /527761BF;
 Reference = Q4;
 ValeurCmp = MMBT4401;
-IdModule  = ;
+IdModule  = SOT23;
 EndCmp
 
 BeginCmp
-TimeStamp = /527692F1;
+TimeStamp = /527761C5;
 Reference = Q5;
 ValeurCmp = MMBT4401;
-IdModule  = ;
+IdModule  = SOT23;
 EndCmp
 
 BeginCmp
@@ -473,7 +473,7 @@ BeginCmp
 TimeStamp = /5276092F;
 Reference = ROT1;
 ValeurCmp = ROTARY-ENCODER;
-IdModule  = ;
+IdModule  = SF_ROTARY-ENCODER;
 EndCmp
 
 BeginCmp
@@ -494,7 +494,7 @@ BeginCmp
 TimeStamp = /5275D8BF;
 Reference = TC1;
 ValeurCmp = THERMOCOUPLE;
-IdModule  = ;
+IdModule  = THERMOCOUPLE_MINI_PCC-SMP;
 EndCmp
 
 EndListe
