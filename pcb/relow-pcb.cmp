@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2013-07-07 BZR 4022)-stable date = 11/4/2013 1:35:57 AM
+Cmp-Mod V01 Created by CvPcb (2013-07-07 BZR 4022)-stable date = 11/4/2013 2:31:02 PM
 
 BeginCmp
 TimeStamp = /5275E0D8;
@@ -130,7 +130,7 @@ BeginCmp
 TimeStamp = /52758308;
 Reference = J2;
 ValeurCmp = TOASTER;
-IdModule  = ;
+IdModule  = 2-PIN_SCREW-TERM_P7.5MM;
 EndCmp
 
 BeginCmp

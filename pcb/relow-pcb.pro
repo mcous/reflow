@@ -1,6 +1,6 @@
-update=11/4/2013 1:36:05 AM
+update=11/4/2013 2:34:03 PM
 version=1
-last_client=kicad
+last_client=pcbnew
 [eeschema]
 version=1
 LibDir=../../kicad-lib/components
@@ -28,14 +28,16 @@ LibName15=ftdi-ic
 [cvpcb]
 version=1
 NetIExt=net
+[general]
+version=1
 [pcbnew]
 version=1
-LastNetListRead=
+LastNetListRead=relow-pcb.net
 UseCmpFile=1
-PadDrill=0.700000000000
-PadDrillOvalY=0.700000000000
-PadSizeH=1.200000000000
-PadSizeV=1.200000000000
+PadDrill=1.300000000000
+PadDrillOvalY=1.300000000000
+PadSizeH=2.000000000000
+PadSizeV=2.000000000000
 PcbTextSizeV=1.500000000000
 PcbTextSizeH=1.500000000000
 PcbTextThickness=0.300000000000
@@ -71,5 +73,4 @@ LibName19=thru_led
 LibName20=to
 LibName21=xtal
 LibName22=sparkfun
-[general]
-version=1
+LibName23=sharp
