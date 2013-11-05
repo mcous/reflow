@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2013-07-07 BZR 4022)-stable date = 11/4/2013 2:31:02 PM
+Cmp-Mod V01 Created by CvPcb (2013-07-07 BZR 4022)-stable date = 11/4/2013 6:53:00 PM
 
 BeginCmp
 TimeStamp = /5275E0D8;
@@ -158,21 +158,21 @@ BeginCmp
 TimeStamp = /5275FE41;
 Reference = LED3;
 ValeurCmp = ON;
-IdModule  = 0603(1608m)_led;
+IdModule  = LED-5mm;
 EndCmp
 
 BeginCmp
 TimeStamp = /5275FE91;
 Reference = LED4;
 ValeurCmp = OFF;
-IdModule  = 0603(1608m)_led;
+IdModule  = LED-5mm;
 EndCmp
 
 BeginCmp
 TimeStamp = /5275F6C0;
 Reference = LED5;
 ValeurCmp = HOT;
-IdModule  = 0603(1608m)_led;
+IdModule  = LED-5mm;
 EndCmp
 
 BeginCmp
@@ -472,7 +472,7 @@ EndCmp
 BeginCmp
 TimeStamp = /5276092F;
 Reference = ROT1;
-ValeurCmp = ROTARY-ENCODER;
+ValeurCmp = SET TEMP;
 IdModule  = SF_ROTARY-ENCODER;
 EndCmp
 
