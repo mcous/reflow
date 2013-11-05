@@ -1,6 +1,6 @@
-update=11/4/2013 2:34:03 PM
+update=11/5/2013 12:44:09 AM
 version=1
-last_client=pcbnew
+last_client=kicad
 [eeschema]
 version=1
 LibDir=../../kicad-lib/components
@@ -28,8 +28,6 @@ LibName15=ftdi-ic
 [cvpcb]
 version=1
 NetIExt=net
-[general]
-version=1
 [pcbnew]
 version=1
 LastNetListRead=relow-pcb.net
@@ -74,3 +72,5 @@ LibName20=to
 LibName21=xtal
 LibName22=sparkfun
 LibName23=sharp
+[general]
+version=1
