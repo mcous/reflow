@@ -14,7 +14,7 @@ LIBS:sharp-relay
 LIBS:ti-ic
 LIBS:sparkfun
 LIBS:ftdi-ic
-LIBS:relow-pcb-cache
+LIBS:reflow-pcb-cache
 EELAYER 27 0
 EELAYER END
 $Descr A 11000 8500
