@@ -26,9 +26,6 @@ int main(void) {
     // refresh the display
     disp.refresh();
 
-    //DISPLAY_DIG_PORT = (DISPLAY_DIG_PORT & ~DISPLAY_DIG_MASK) | (1<<2);
-    //DISPLAY_SEG_PORT = disp.font[0];
-
     // increment
     loop++;
     if (loop > 10) {
