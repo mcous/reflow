@@ -8,6 +8,12 @@
 #ifndef REFLOW_H
 #define REFLOW_H
 
+// necessary includes
+#include "input.h"
 
+// global objects
+// button and rotary encoder input
+Input in;
+//volatile float num;
 
 #endif

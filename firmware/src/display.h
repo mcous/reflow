@@ -18,8 +18,6 @@
 // decimal point off
 #define DISPLAY_DIG_OFF 0xFF
 
-
-
 class Display {
 public:
   // constructor
@@ -31,7 +29,7 @@ public:
   // initialize display
   void init();
 
-//private:
+private:
   // font set
   uint8_t font[10];
   // current digit
@@ -40,7 +38,6 @@ public:
   uint8_t digDisp[DISPLAY_NUM_DIGITS];
   // decimal point
   uint8_t dp;
-
 };
 
 #endif
