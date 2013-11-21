@@ -11,7 +11,10 @@
 #include "reflow.h"
 #include "display.h"
 
-
+// ISR for rotary encoder
+ISR(ENCODER_PCINT_vect) {
+  e.handleChange();
+}
 
 // ISR for switch inputs
 ISR(BUTTON_PCINT_vect, ISR_NOBLOCK) {
@@ -31,52 +34,97 @@ int main(void) {
   // get the display ready
   Display disp;
   disp.init();
-  // get the input ready
+  // get the buttons and encoder input ready
   b.init();
+  e.init();
+  // initialize the indicator LEDs
+  initLeds();
 
-  uint8_t loop = 0;
-  float num = 0;
+  // temperature
+  initThermo();
+  bool targetHit = false;
+  float temp = 0;
+  float setTemp = 200;
+  float target = 0;
+
+  // operating mode
+  uint8_t mode = MODE_OFF;
+  LED_PORT = (LED_PORT & ~LED_MASK) | LED_STOP;
+  uint8_t prevMode = mode;
 
   // enable global interrupts
   sei();
 
   // sideways eight loop
   for (;;) {
+    // get the temperature
+    temp = readThermo();
+
+    // handle the temperature if we're on
+    if ((mode == MODE_ON) && (!targetHit)) {
+      if (temp < target) {
+        HEAT_PORT |= HEAT_PIN;
+      }
+      else {
+        targetHit = true;
+        HEAT_PORT &= ~HEAT_PIN;
+      }
+    }
+
     // set the display
-    disp.set(num);
-    // refresh the display
-    disp.refresh();
+    if (mode == MODE_OFF) {
+      disp.set(vref);
+    }
+    else if (mode == MODE_ON) {
+      disp.set(temp);
+    }
+    else {
+      disp.set(setTemp);
+    }
 
     // handle buttons
     uint8_t buttons;
-    // presses
+    //  button presses
     if (b.getPress(&buttons)) {
       if (buttons == BUTTON_SET) {
-        num += 10;
+        if (mode == MODE_SET) {
+          target = setTemp;
+          mode = prevMode;
+        }
+        else {
+          prevMode = mode;
+          mode = MODE_SET;
+        }
       } 
       else if (buttons == BUTTON_START) {
-        num += 20;
+        mode = MODE_ON;
+        LED_PORT = (LED_PORT & ~LED_MASK) | LED_START;
+        targetHit = false;
       }
       else {
-        num += 30;
+        mode = MODE_OFF;
+        LED_PORT = (LED_PORT & ~LED_MASK) | LED_STOP;
+        HEAT_PORT &= ~HEAT_PIN;
       }
     }
-    // holds
+    // button holds
     if (b.getHold(&buttons)) {
       // do nothing
       break;
     }
 
-    // increment the counter
-    loop++;
-    if (loop > 10) {
-      num+=0.001;
-      loop = 0;
-      if (num >= 10000) {
-        num = 0;
+    // handle encoder input
+    int8_t enc = e.getChange();
+    if (mode == MODE_SET) {
+      setTemp += 0.5*enc;
+      // underflow protection
+      if (setTemp < 0) {
+        setTemp = 0;
       }
     }
 
+    // refresh the display
+    disp.refresh();
     // slight delay
     _delay_ms(2);
 
@@ -85,3 +133,55 @@ int main(void) {
   // DEEP THOUGHT
   return 42;
 }
+
+void initLeds(void) {
+  // set pins as outputs
+  DDR(LED_PORT) |= LED_MASK;
+  // set pins to low (off)
+  LED_PORT &= ~LED_MASK;
+}
+
+void initHeat(void) {
+  // set heater to output
+  DDR(HEAT_PORT) |= HEAT_PIN;
+  // set low (off)
+  HEAT_PORT &= ~HEAT_PIN;
+}
+
+// intialize thermocouple reading
+void initThermo(void) {
+  // // read the 1.1V ref to calibrate readings
+  // ADMUX = 0x0E;
+
+  // // read like 5 times to get a good reading
+  // uint16_t read;
+  // for (uint8_t i=0; i<10; i++) {
+  //   // start a ADC conversion
+  //   ADCSRA |= (1<<ADSC);
+  //   // wait for conversion to complete
+  //   while (ADCSRA & (1<<ADSC));
+  //   // read the value;
+  //   read = ADCL | (ADCH << 8);
+  // }
+  // set the vref from that reading
+  vref = 4.82;
+
+  // set up ADC on ADC7 with VREF as the reference voltage
+  ADMUX = 7;
+  // enable ADC
+  ADCSRA |= (1<<ADEN); 
+}
+
+// read the thermocouple
+float readThermo(void) {
+  // start a ADC conversion
+  ADCSRA |= (1<<ADSC);
+  // wait for conversion to complete
+  while (ADCSRA & (1<<ADSC));
+  // read the value;
+  uint16_t read = ADCL | (ADCH << 8);
+  // convert the value to temperature
+  float volts = (read * vref)/1024.0;
+  return (volts / 0.005);
+}
+

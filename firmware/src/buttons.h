@@ -2,8 +2,8 @@
 // Copyright 2013 by Wiley Cousins, LLC.
 // shared under the terms of the MIT License
 //
-// file: input.h
-// description: header for push-button and rotary encoder input class
+// file: buttons.h
+// description: header for push-button input class
 
 #ifndef REFLOW_BUTTONS_H
 #define REFLOW_BUTTONS_H

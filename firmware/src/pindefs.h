@@ -33,8 +33,8 @@
 // pushbutton port
 #define BUTTON_PORT   PORTD
 #define BUTTON_SET    (1<<4)
-#define BUTTON_START  (1<<3)
-#define BUTTON_STOP   (1<<2)
+#define BUTTON_START  (1<<2)
+#define BUTTON_STOP   (1<<3)
 #define BUTTON_MASK   ( BUTTON_STOP | BUTTON_START | BUTTON_SET )
 // pushbutton pin change stuff
 #define BUTTON_PCIE        (1<<PCIE2)
@@ -42,14 +42,27 @@
 #define BUTTON_PCINT_vect  PCINT2_vect
 
 // encoder port
-#define ENCODER_PORT  PORTC
-#define ENCODER_A     (1<<4)
-#define ENCODER_B     (1<<5)
-#define ENCODER_MASK  ( INPUT_ENC A | INPUT_ENC_B )
+#define ENCODER_PORT   PORTC
+#define ENCODER_A      (1<<4)
+#define ENCODER_B      (1<<5)
+#define ENCODER_MASK   ( ENCODER_B | ENCODER_A )
+#define ENCODER_SHIFT  4
 // encoder pin change
 #define ENCODER_PCIE        (1<<PCIE1)
 #define ENCODER_PCMSK       PCMSK1
 #define ENCODER_PCINT_vect  PCINT1_vect
 
+// mode indicator LEDs
+#define LED_PORT   PORTD
+#define LED_STOP   (1<<6)
+#define LED_START  (1<<5)
+#define LED_MASK   (LED_START | LED_STOP)
+
+// heater
+#define HEAT_PORT  PORTD
+#define HEAT_PIN   (1<<7)
+
+// temperature reading
+#define TEMP_ADC  (1<<7)
 
 #endif

@@ -2,8 +2,8 @@
 // Copyright 2013 by Wiley Cousins, LLC.
 // shared under the terms of the MIT License
 //
-// file: input.h
-// description: class for push-button and rotary encoder input
+// file: buttons.cpp
+// description: class for push-button input
 
 #include "buttons.h"
 #include "pindefs.h"
