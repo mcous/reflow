@@ -31,25 +31,25 @@
 #define DISPLAY_SEG_DP  (1<<3)
 
 // pushbutton port
-#define INPUT_BUTTON_PORT   PORTD
-#define INPUT_BUTTON_SET    (1<<4)
-#define INPUT_BUTTON_START  (1<<3)
-#define INPUT_BUTTON_STOP   (1<<2)
-#define INPUT_BUTTON_MASK   ( INPUT_BUTTON_STOP | INPUT_BUTTON_START | INPUT_BUTTON_SET )
+#define BUTTON_PORT   PORTD
+#define BUTTON_SET    (1<<4)
+#define BUTTON_START  (1<<3)
+#define BUTTON_STOP   (1<<2)
+#define BUTTON_MASK   ( BUTTON_STOP | BUTTON_START | BUTTON_SET )
 // pushbutton pin change stuff
-#define INPUT_BUTTON_PCIE        (1<<PCIE2)
-#define INPUT_BUTTON_PCMSK       PCMSK2
-#define INPUT_BUTTON_PCINT_vect  PCINT2_vect
+#define BUTTON_PCIE        (1<<PCIE2)
+#define BUTTON_PCMSK       PCMSK2
+#define BUTTON_PCINT_vect  PCINT2_vect
 
 // encoder port
-#define INPUT_ENC_PORT  PORTC
-#define INPUT_ENC_A     (1<<4)
-#define INPUT_ENC_B     (1<<5)
-#define INPUT_ENC_MASK  ( INPUT_ENC A | INPUT_ENC_B )
+#define ENCODER_PORT  PORTC
+#define ENCODER_A     (1<<4)
+#define ENCODER_B     (1<<5)
+#define ENCODER_MASK  ( INPUT_ENC A | INPUT_ENC_B )
 // encoder pin change
-#define INPUT_ENC_PCIE        (1<<PCIE1)
-#define INPUT_ENC_PCMSK       PCMSK1
-#define INPUT_ENC_PCINT_vect  PCINT1_vect
+#define ENCODER_PCIE        (1<<PCIE1)
+#define ENCODER_PCMSK       PCMSK1
+#define ENCODER_PCINT_vect  PCINT1_vect
 
 
 #endif

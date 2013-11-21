@@ -14,13 +14,13 @@
 
 
 // ISR for switch inputs
-ISR(INPUT_BUTTON_PCINT_vect, ISR_NOBLOCK) {
-  in.handleButtonChange();
+ISR(BUTTON_PCINT_vect, ISR_NOBLOCK) {
+  b.handleChange();
 }
 
 // switch debouncer / timer
 ISR(TIMER2_OVF_vect, ISR_NOBLOCK) {
-  in.handleButtonTimer();
+  b.handleTimer();
 }
 
 // application main method
@@ -32,7 +32,7 @@ int main(void) {
   Display disp;
   disp.init();
   // get the input ready
-  in.init();
+  b.init();
 
   uint8_t loop = 0;
   float num = 0;
@@ -50,11 +50,11 @@ int main(void) {
     // handle buttons
     uint8_t buttons;
     // presses
-    if (in.getButtonPress(&buttons)) {
-      if (buttons == INPUT_BUTTON_SET) {
+    if (b.getPress(&buttons)) {
+      if (buttons == BUTTON_SET) {
         num += 10;
       } 
-      else if (buttons == INPUT_BUTTON_START) {
+      else if (buttons == BUTTON_START) {
         num += 20;
       }
       else {
@@ -62,7 +62,7 @@ int main(void) {
       }
     }
     // holds
-    if (in.getButtonHold(&buttons)) {
+    if (b.getHold(&buttons)) {
       // do nothing
       break;
     }

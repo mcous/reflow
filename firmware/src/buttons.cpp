@@ -5,127 +5,127 @@
 // file: input.h
 // description: class for push-button and rotary encoder input
 
-#include "input.h"
+#include "buttons.h"
 #include "pindefs.h"
 
 // contructor - gives private variables default values
-Input::Input(void) {
+Buttons::Buttons(void) {
   // switch states
-  buttonState = INPUT_BUTTON_MASK;
-  buttonPressState = INPUT_BUTTON_MASK;
-  buttonHoldState = INPUT_BUTTON_MASK;
+  state = BUTTON_MASK;
+  pressState = BUTTON_MASK;
+  holdState = BUTTON_MASK;
   // switch timer counter
-  buttonTimerCount = 0;
+  timerCount = 0;
   // switch event flags
-  buttonRelease = false;
-  buttonPress = false;
-  buttonHold = false;
+  release = false;
+  press = false;
+  hold = false;
 }
 
 // handle button pin change
-void Input::handleButtonChange(void) {
+void Buttons::handleChange(void) {
   // disable the timer and switch interrupts and reset the switch timer counter
-  disableButtonTimer();
-  disableButtonInt();
-  buttonTimerCount = 0;
+  disableTimer();
+  disableInt();
+  timerCount = 0;
   // save the state that triggered the interrupt
-  buttonState = getButtonState();
+  state = getState();
   // start the switch timer to debounce and time if necessary
-  enableButtonTimer();
+  enableTimer();
 }
 
 // handle debouncing the pins and sensing presses vs holds
-void Input::handleButtonTimer(void) {
+void Buttons::handleTimer(void) {
   // disable the timer
-  disableButtonTimer();
+  disableTimer();
   // increment the counter
-  buttonTimerCount++;
+  timerCount++;
   // clear the release flag
-  buttonRelease = false;
+  release = false;
 
   // check the values still match (i.e. if true, it wasn't a bounce)
-  if (getButtonState() == buttonState) {
+  if (getState() == state) {
     // if one or both switches are down (if both switches are up, both will read high)
-    if ( buttonState != INPUT_BUTTON_MASK) {
+    if ( state != BUTTON_MASK) {
       // check for a press
-      if (buttonTimerCount == 1) {
-        buttonPress = true;
-        buttonPressState = buttonState;
+      if (timerCount == 1) {
+        press = true;
+        pressState = state;
       }
       // check for a hold
-      else if (buttonTimerCount >= INPUT_BUTTON_HOLD_COUNT) {
-        buttonPress = false;
-        buttonHold = true;
-        buttonHoldState = buttonState;
-        buttonTimerCount = 1;
+      else if (timerCount >= BUTTON_HOLD_COUNT) {
+        press = false;
+        hold = true;
+        holdState = state;
+        timerCount = 1;
       }
       // re-enable the timer
-      enableButtonTimer();
+      enableTimer();
     }
     // else switches were released
     else {
-      buttonRelease = true;
+      release = true;
     }
   }
 
   // re-enable the pin change interrupt
-  enableButtonInt();
+  enableInt();
 }
 
 
 // initialization
-void Input::init(void) {
-  initButtonPins();
-  initButtonInt();
-  initButtonTimer();
-  enableButtonInt();
+void Buttons::init(void) {
+  initPins();
+  initInt();
+  initTimer();
+  enableInt();
 }
 
 // get switch state
-uint8_t Input::getButtonState(void) {
-  return PIN(INPUT_BUTTON_PORT) & INPUT_BUTTON_MASK;
+uint8_t Buttons::getState(void) {
+  return PIN(BUTTON_PORT) & BUTTON_MASK;
 }
 
 // get the flag states and clear as necessary
 // set uint8_t at pointer to switch state if flag is true
 // outputted switch state is bit flipped for convenience in the app
-bool Input::getButtonHold(uint8_t *s) {
-  if (buttonHold) {
-    buttonHold = false;
-    *s = INPUT_BUTTON_MASK & ~buttonHoldState;
+bool Buttons::getHold(uint8_t *s) {
+  if (hold) {
+    hold = false;
+    *s = BUTTON_MASK & ~holdState;
     return true;
   }
   return false;
 }
 
-bool Input::getButtonPress(uint8_t *s) {
-  if (buttonPress && buttonRelease) {
-    buttonPress = false;
-    buttonRelease = false;
-    *s = INPUT_BUTTON_MASK & ~buttonPressState;
+bool Buttons::getPress(uint8_t *s) {
+  if (press && release) {
+    press = false;
+    release = false;
+    *s = BUTTON_MASK & ~pressState;
     return true;
   }
   return false;
 }
 
 // init switch pins as inputs with pullups enabled
-void Input::initButtonPins(void) {
+void Buttons::initPins(void) {
   // clear pins in DDR to inputs
-  DDR(INPUT_BUTTON_PORT) &= ~INPUT_BUTTON_MASK;
+  DDR(BUTTON_PORT) &= ~BUTTON_MASK;
   // enable pull up resistors
-  INPUT_BUTTON_PORT |= INPUT_BUTTON_MASK;
+  BUTTON_PORT |= BUTTON_MASK;
 }
 
 // init pin change interrupts
-void Input::initButtonInt(void) {
+void Buttons::initInt(void) {
   // set up pin change interrupt on the pins
-  INPUT_BUTTON_PCMSK |= INPUT_BUTTON_MASK;
+  BUTTON_PCMSK |= BUTTON_MASK;
 }
 
 // init timer for debouncing
 // using an 8-bit timer on an 8MHz clock
 // PS=1024 means an overflow will occur after about 32 ms
-void Input::initButtonTimer(void) {
+void Buttons::initTimer(void) {
   // ensure timer2 settings are cleared out
   TCCR2A = 0;
   // set prescaler to 1024
@@ -133,23 +133,23 @@ void Input::initButtonTimer(void) {
 }
 
 // interrupt helpers
-void Input::enableButtonInt(void) {
+void Buttons::enableInt(void) {
   // enable the pin change interrupt
-  PCICR |= INPUT_BUTTON_PCIE;
+  PCICR |= BUTTON_PCIE;
 }
 
-void Input::disableButtonInt(void) {
+void Buttons::disableInt(void) {
   // disable the pin change interrupt
-  PCICR &= ~INPUT_BUTTON_PCIE;
+  PCICR &= ~BUTTON_PCIE;
 }
 
-void Input::enableButtonTimer(void) {
+void Buttons::enableTimer(void) {
   // reload timer
   TCNT2 = 0;
   // enable the overflow interrupt
   TIMSK2 = (1 << TOIE2);
 }
 
-void Input::disableButtonTimer(void) {
+void Buttons::disableTimer(void) {
   TIMSK2 = 0;
 }

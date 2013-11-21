@@ -9,11 +9,11 @@
 #define REFLOW_H
 
 // necessary includes
-#include "input.h"
+#include "buttons.h"
 
 // global objects
 // button and rotary encoder input
-Input in;
+Buttons b;
 //volatile float num;
 
 #endif
