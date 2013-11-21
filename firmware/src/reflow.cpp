@@ -59,6 +59,10 @@ int main(void) {
   for (;;) {
     // get the temperature
     temp = readThermo();
+    // check for open thermocouple
+    if (temp > 400) {
+      mode = MODE_ERR;
+    }
 
     // handle the temperature if we're on
     if ((mode == MODE_ON) && (!targetHit)) {
@@ -72,14 +76,14 @@ int main(void) {
     }
 
     // set the display
-    if (mode == MODE_OFF) {
-      disp.set(vref);
-    }
-    else if (mode == MODE_ON) {
+    if (mode == MODE_ON || mode == MODE_OFF) {
       disp.set(temp);
     }
-    else {
+    else if (mode == MODE_SET) {
       disp.set(setTemp);
+    }
+    else if (mode == MODE_ERR) {
+      disp.setErr();
     }
 
     // handle buttons
@@ -150,26 +154,17 @@ void initHeat(void) {
 
 // intialize thermocouple reading
 void initThermo(void) {
-  // // read the 1.1V ref to calibrate readings
-  // ADMUX = 0x0E;
-
-  // // read like 5 times to get a good reading
-  // uint16_t read;
-  // for (uint8_t i=0; i<10; i++) {
-  //   // start a ADC conversion
-  //   ADCSRA |= (1<<ADSC);
-  //   // wait for conversion to complete
-  //   while (ADCSRA & (1<<ADSC));
-  //   // read the value;
-  //   read = ADCL | (ADCH << 8);
-  // }
-  // set the vref from that reading
-  vref = 4.82;
-
   // set up ADC on ADC7 with VREF as the reference voltage
   ADMUX = 7;
   // enable ADC
-  ADCSRA |= (1<<ADEN); 
+  ADCSRA |= (1<<ADEN);
+  // do a reading and toss it
+  ADCSRA |= (1<<ADSC);
+  // wait for conversion to complete
+  while (ADCSRA & (1<<ADSC));
+  // read the value;
+  uint16_t read = ADCL | (ADCH << 8);
+  (void) read;
 }
 
 // read the thermocouple

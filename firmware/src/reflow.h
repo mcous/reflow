@@ -16,6 +16,10 @@
 #define MODE_OFF  0
 #define MODE_ON   1
 #define MODE_SET  2
+#define MODE_ERR  255
+
+// voltage reference as measured externally
+#define VREF  4.85
 
 // global objects
 // button and rotary encoder input
