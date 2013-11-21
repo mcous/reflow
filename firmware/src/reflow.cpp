@@ -8,28 +8,40 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include "reflow.h"
+#include "display.h"
 
 // application main method
 int main(void) {
 
-  // set digit control as outputs and set to low (off)
-  DDRC |= ( (1<<3) | (1<<2) | (1<<1) | (1<<0) );
-  PORTC &= ~( (1<<3) | (1<<2) | (1<<1) | (1<<0) );
-  // set segment control as outputs and set to low (off)
-  DDRB = 0xFF;
-  PORTB = 0;
+  // get the display ready
+  Display disp;
+  disp.init();
 
-  uint8_t dig = 0;
+  uint8_t loop = 0;
+  float num = 0;
   // sideways eight loop
   for (;;) {
-    // increment or overflow
-    dig = (dig>3) ? 0 : dig + 1;
-    // enable the digit
-    PORTC = (PORTC & ~0x0F) | (1<<dig);
-    // let's see what seg A is
-    PORTB = (1<<7) | (1<<6) | (1<<5) | (1<<4) | (1<<3) | (1<<2) | (1<<1) | (1<<0);
+    // set the display
+    disp.set(num);
+    // refresh the display
+    disp.refresh();
+
+    //DISPLAY_DIG_PORT = (DISPLAY_DIG_PORT & ~DISPLAY_DIG_MASK) | (1<<2);
+    //DISPLAY_SEG_PORT = disp.font[0];
+
+    // increment
+    loop++;
+    if (loop > 10) {
+      num+=0.001;
+      loop = 0;
+      if (num >= 10000) {
+        num = 0;
+      }
+    }
+
     // slight delay
     _delay_ms(2);
+
   }
 
   // DEEP THOUGHT
