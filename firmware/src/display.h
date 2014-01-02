@@ -16,7 +16,7 @@
 // number of digits
 #define DISPLAY_NUM_DIGITS 4
 // decimal point off
-#define DISPLAY_DIG_OFF 0xFF
+#define DISPLAY_SEG_OFF 0xFF
 
 class Display {
 public:
@@ -24,14 +24,16 @@ public:
   Display(void);
   // set display
   void set(float num);
+  // set display error
+  void setErr(uint8_t err);
   // refresh display
-  void refresh();
+  void refresh(void);
   // initialize display
-  void init();
+  void init(void);
 
 private:
   // font set
-  uint8_t font[10];
+  uint8_t font[12];
   // current digit
   uint8_t digit;
   // current display for the digits

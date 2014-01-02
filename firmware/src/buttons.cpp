@@ -129,7 +129,7 @@ void Buttons::initTimer(void) {
   // ensure timer2 settings are cleared out
   TCCR2A = 0;
   // set prescaler to 1024
-  TCCR2B = ( (1 << CS22) | (1 << CS21) | (1 << CS20) );
+  TCCR2B = ( (1 << CS22) | (1<<CS21) | (1 << CS20) );
 }
 
 // interrupt helpers

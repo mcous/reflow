@@ -18,15 +18,24 @@
 #define MODE_SET  2
 #define MODE_ERR  255
 
+// error codes
+#define ERROR_THERMO_OPEN 0
+
 // voltage reference as measured externally
-#define VREF  4.85
+#define VREF  4.93
+
+// ADC rolling average buffer length
+#define ADC_BUFFER_LEN 1
 
 // global objects
 // button and rotary encoder input
 Buttons b;
 Encoder e;
-// voltage reference
-float vref;
+
+// ISR volatiles
+volatile uint16_t adcBuff[ADC_BUFFER_LEN];
+volatile uint8_t adcIndex;
+volatile float temp;
 
 // function prototypes
 int main(void);

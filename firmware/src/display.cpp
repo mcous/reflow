@@ -21,8 +21,14 @@ Display::Display(void) {
   font[7] = ( DISPLAY_SEG_A | DISPLAY_SEG_B | DISPLAY_SEG_C );
   font[8] = ( DISPLAY_SEG_A | DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_F | DISPLAY_SEG_G );
   font[9] = ( DISPLAY_SEG_A | DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_F | DISPLAY_SEG_G );
+  // error
+  // e
+  font[10] = ( DISPLAY_SEG_A | DISPLAY_SEG_F | DISPLAY_SEG_G | DISPLAY_SEG_E | DISPLAY_SEG_D );
+  // r
+  font[11] = ( DISPLAY_SEG_G | DISPLAY_SEG_E );
+
   // decimal point
-  dp = DISPLAY_DIG_OFF;
+  dp = DISPLAY_SEG_OFF;
 
   // all digits off
   digit = 0;
@@ -76,6 +82,15 @@ void Display::set(float num) {
   }
 
   return;
+}
+
+// set display error
+void Display::setErr(uint8_t err) {
+  dp = DISPLAY_SEG_OFF;
+  digDisp[0] = 10;
+  digDisp[1] = 11;
+  digDisp[2] = 11;
+  digDisp[3] = err;
 }
 
 void Display::refresh(void) {

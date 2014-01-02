@@ -11,6 +11,19 @@
 #include "reflow.h"
 #include "display.h"
 
+// ISR for ADC readings
+ISR(ADC_vect) {
+  // read the ADC reading into the buffer
+  adcBuff[adcIndex] = ADCL | (ADCH << 8);
+  // increment the buffer index for rolling average
+  adcIndex = (adcIndex < (ADC_BUFFER_LEN-1)) ? (adcIndex+1) : 0;
+}
+
+// ISR for temperature readings
+ISR(TIMER1_OVF_vect) {
+  temp = readThermo();
+}
+
 // ISR for rotary encoder
 ISR(ENCODER_PCINT_vect) {
   e.handleChange();
@@ -31,6 +44,13 @@ int main(void) {
   // diable global interrupts for setting stuff
   cli();
 
+  // ISR volatiles
+  // ADC readings
+  for (uint8_t i=0; i<ADC_BUFFER_LEN; i++) {
+    adcBuff[i] = 0;
+  }
+  adcIndex = 0;
+
   // get the display ready
   Display disp;
   disp.init();
@@ -43,9 +63,17 @@ int main(void) {
   // temperature
   initThermo();
   bool targetHit = false;
-  float temp = 0;
+  //float temp = 0;
   float setTemp = 200;
   float target = 0;
+  // perform temperature readings about every 30 ms
+  // ensure timer0 settings are cleared out
+  TCCR1A = 0;
+  // set prescaler to 1024
+  TCCR1B = ( (1 << CS11) | (1 << CS10) );
+  // enable the overflow interrupt
+  TIMSK1 = (1 << TOIE1);
+
 
   // operating mode
   uint8_t mode = MODE_OFF;
@@ -58,7 +86,7 @@ int main(void) {
   // sideways eight loop
   for (;;) {
     // get the temperature
-    temp = readThermo();
+    //temp = readThermo();
     // check for open thermocouple
     if (temp > 400) {
       mode = MODE_ERR;
@@ -83,7 +111,7 @@ int main(void) {
       disp.set(setTemp);
     }
     else if (mode == MODE_ERR) {
-      disp.setErr();
+      disp.setErr(ERROR_THERMO_OPEN);
     }
 
     // handle buttons
@@ -129,9 +157,6 @@ int main(void) {
 
     // refresh the display
     disp.refresh();
-    // slight delay
-    _delay_ms(2);
-
   }
 
   // DEEP THOUGHT
@@ -156,27 +181,24 @@ void initHeat(void) {
 void initThermo(void) {
   // set up ADC on ADC7 with VREF as the reference voltage
   ADMUX = 7;
-  // enable ADC
-  ADCSRA |= (1<<ADEN);
-  // do a reading and toss it
-  ADCSRA |= (1<<ADSC);
+  // enable ADC, do a reading, and toss it
+  ADCSRA |= ( (1<<ADEN) | (1<<ADSC) );
   // wait for conversion to complete
   while (ADCSRA & (1<<ADSC));
   // read the value;
   uint16_t read = ADCL | (ADCH << 8);
   (void) read;
+  // put ADC into free-running mode, enable the interrupt, and slow things down
+  ADCSRA |= ( (1<<ADSC) | (1<<ADATE) | (1<<ADIE) | (1<<ADPS2));
 }
 
-// read the thermocouple
+// read the thermocouple rolling average from the buffer
 float readThermo(void) {
-  // start a ADC conversion
-  ADCSRA |= (1<<ADSC);
-  // wait for conversion to complete
-  while (ADCSRA & (1<<ADSC));
-  // read the value;
-  uint16_t read = ADCL | (ADCH << 8);
-  // convert the value to temperature
-  float volts = (read * vref)/1024.0;
-  return (volts / 0.005);
+  uint16_t tot = 0;
+  for (uint8_t i=0; i<ADC_BUFFER_LEN; i++) {
+    tot += adcBuff[i];
+  }
+  tot /= ADC_BUFFER_LEN;
+  return ((tot*VREF)/1024.0)/0.005;
 }
 

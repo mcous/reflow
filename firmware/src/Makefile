@@ -21,7 +21,7 @@ MCU = atmega328p
 # mcu clock frequency
 CLK = 8000000
 # avr programmer (and port if necessary)
-#PRG = avrispmkii -P usb -b 115200 -B 4
+#PRG = avrispv2 -P usb -b 115200 -vvv
 PRG = avrisp -P /dev/tty.usbmodem411 -b 19200
 # fuse bit values for v0.1 pcb
 # use internal 8 MHz RC oscillator with no clock division and slowest available startup
