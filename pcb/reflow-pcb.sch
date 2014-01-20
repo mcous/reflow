@@ -21,7 +21,7 @@ $Descr A 11000 8500
 encoding utf-8
 Sheet 1 1
 Title "reflow pcb"
-Date "5 nov 2013"
+Date "20 jan 2014"
 Rev "0.1"
 Comp "Wiley Cousins, LLC."
 Comment1 "github.com/mcous/reflow"
@@ -1239,7 +1239,7 @@ Text Label 4000 3100 2    60   ~ 0
 USART_RX
 Text Label 4000 3200 2    60   ~ 0
 USART_TX
-Text Label 4000 3300 2    60   ~ 0
+Text Label 3950 2900 0    60   ~ 0
 RESET
 $Comp
 L GND #PWR036
@@ -1842,8 +1842,6 @@ Wire Wire Line
 Wire Wire Line
 	4000 3200 3450 3200
 Wire Wire Line
-	3450 3300 4000 3300
-Wire Wire Line
 	3450 3700 3550 3700
 Wire Wire Line
 	3450 3800 3550 3800
@@ -1951,4 +1949,23 @@ Wire Wire Line
 	9250 5700 9350 5700
 Wire Wire Line
 	8450 6000 8550 6000
+$Comp
+L C C?
+U 1 1 52DD91E9
+P 4200 3100
+F 0 "C?" V 4100 2950 60  0000 C CNN
+F 1 "0.1uF" V 4000 2900 60  0000 C CNN
+F 2 "~" H 4200 3100 60  0001 C CNN
+F 3 "~" H 4200 3100 60  0001 C CNN
+	1    4200 3100
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	3450 3300 4200 3300
+Wire Wire Line
+	4200 3300 4200 3200
+Wire Wire Line
+	4200 3000 4200 2900
+Wire Wire Line
+	4200 2900 3950 2900
 $EndSCHEMATC
