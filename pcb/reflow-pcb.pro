@@ -1,6 +1,6 @@
-update=1/20/2014 6:48:11 PM
+update=1/21/2014 12:45:59 AM
 version=1
-last_client=eeschema
+last_client=kicad
 [cvpcb]
 version=1
 NetIExt=net
@@ -48,8 +48,6 @@ LibName20=to
 LibName21=xtal
 LibName22=sparkfun
 LibName23=sharp
-[general]
-version=1
 [eeschema]
 version=1
 LibDir=../../kicad-lib/components
@@ -77,3 +75,5 @@ LibName15=ftdi-ic
 LibName16=7400-ic
 LibName17=uln-ic
 LibName18=rohm
+[general]
+version=1
