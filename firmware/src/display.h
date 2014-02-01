@@ -10,6 +10,7 @@
 
 // class includes
 #include <avr/io.h>
+#include <avr/pgmspace.h>
 #include "pindefs.h"
 
 // defines
@@ -33,7 +34,7 @@ public:
 
 private:
   // font set
-  uint8_t font[12];
+  const uint8_t font[12] PROGMEM;
   // current digit
   uint8_t digit;
   // current display for the digits
