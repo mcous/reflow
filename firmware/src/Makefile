@@ -40,6 +40,7 @@ DEF =
 # directories
 OBJDIR = ../bin/obj
 EXEDIR = ../bin/exe
+MAPDIR = ../bin/map
 
 #################################################################################################
 # \/ stuff nobody needs to worry about until such time that worrying about it is appropriate \/ #
@@ -53,6 +54,9 @@ DEFINES  := $(addprefix -D,$(DEF))
 CFLAGS    = -Wall -Os -DF_CPU=$(CLK) $(DEFINES) -mmcu=$(MCU) $(INCLUDES)
 # any aditional flags for c++
 CPPFLAGS  =
+# linker flags
+LDFLAGS   = -Wl,-Map=$(MAPDIR)/$(PRJ).map,--cref
+
 
 # executables
 AVRDUDE = avrdude -c $(PRG) -p $(MCU)
@@ -93,7 +97,7 @@ clean:
 
 # elf file
 $(EXEDIR)/$(PRJ).elf: $(OBJDEPS)
-	$(CC) $(CFLAGS) -o $(EXEDIR)/$(PRJ).elf $(OBJ)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $(EXEDIR)/$(PRJ).elf $(OBJ)
 
 # hex file
 $(EXEDIR)/$(PRJ).hex: $(EXEDIR)/$(PRJ).elf
@@ -106,6 +110,7 @@ $(OBJDEPS): | $(OBJDIR)
 $(OBJDIR):
 	mkdir -p $(OBJDIR)
 	mkdir -p $(EXEDIR)
+	mkdir -p $(MAPDIR)
 
 # pattern matching for object files
 # objects from c files
