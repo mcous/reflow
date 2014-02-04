@@ -9,6 +9,7 @@
 #define REFLOW_ENCODER_H
 
 #include <stdint.h>
+#include <avr/pgmspace.h>
 
 class Encoder {
 public:
@@ -22,7 +23,7 @@ public:
   void handleChange(void);
 private:
   // transition lookup table
-  int8_t trans[16];
+  static const int8_t trans[16] PROGMEM;
   // variable to hold state
   volatile uint8_t state;
   // location of rotation

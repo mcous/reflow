@@ -13,24 +13,12 @@ Encoder::Encoder(void) {
   loc = 0;
   tick = 0;
   state = 0;
-  trans[0]  = 0;
-  trans[1]  = 1;
-  trans[2]  = -1;
-  trans[3]  = 0;
-  trans[4]  = -1;
-  trans[5]  = 0;   
-  trans[6]  = 0;
-  trans[7]  = 1;
-  trans[8]  = 1;
-  trans[9]  = 0;
-  trans[10] = 0;
-  trans[11] = -1;
-  trans[12] = 0;
-  trans[13] = -1;
-  trans[14] = 1;
-  trans[15] = 0;
-
 }
+
+// encoder transition lookup table
+const int8_t Encoder::trans[] PROGMEM = {
+  0, 1, -1, 0, -1, 0, 0, 1, 1, 0, 0, -1, 0, -1, 1, 0
+};
 
 // initialization of pins and interrupts
 void Encoder::init(void) {
@@ -44,7 +32,7 @@ void Encoder::handleChange(void) {
   // shift the previous state over and pull in the new state
   state = (((state<<2) | getState()) & 0x0F);
   // increment or decrement the location with the lookup table
-  tick += trans[state];
+  tick += pgm_read_byte(&(trans[state]));
   if (tick > 3) {
     tick = 0;
     loc++;
