@@ -6,22 +6,22 @@
 // description: application file for the reflow oven controller
 
 #include <avr/io.h>
-#include <util/delay.h>
 #include <avr/interrupt.h>
+#include <util/atomic.h>
+#include <util/delay.h>
+
 #include "reflow.h"
 #include "display.h"
 
 // ISR for ADC readings
 ISR(ADC_vect) {
   // read the ADC reading into the buffer
-  adcBuff[adcIndex] = ADCL | (ADCH << 8);
-  // increment the buffer index for rolling average
-  adcIndex = (adcIndex < (ADC_BUFFER_LEN-1)) ? (adcIndex+1) : 0;
+  adcRead = ADCL | (ADCH << 8);
 }
 
 // ISR for temperature readings
 ISR(TIMER1_OVF_vect) {
-  temp = readThermo();
+  tempFour = readThermo();
 }
 
 // ISR for rotary encoder
@@ -41,15 +41,13 @@ ISR(TIMER2_OVF_vect, ISR_NOBLOCK) {
 
 // application main method
 int main(void) {
-  // diable global interrupts for setting stuff
+  // disable global interrupts for setting stuff
   cli();
 
   // ISR volatiles
-  // ADC readings
-  for (uint8_t i=0; i<ADC_BUFFER_LEN; i++) {
-    adcBuff[i] = 0;
-  }
-  adcIndex = 0;
+  // should already be 0 but hey safety first
+  adcRead = 0;
+  tempFour = 0;
 
   // get the display ready
   Display disp;
@@ -63,7 +61,6 @@ int main(void) {
   // temperature
   initThermo();
   bool targetHit = false;
-  //float temp = 0;
   float setTemp = 200;
   float target = 0;
   // perform temperature readings about every 30 ms
@@ -85,16 +82,14 @@ int main(void) {
 
   // sideways eight loop
   for (;;) {
-    // get the temperature
-    //temp = readThermo();
     // check for open thermocouple
-    if (temp > 400) {
+    if (tempFour > 1600) {
       mode = MODE_ERR;
     }
 
     // handle the temperature if we're on
     if ((mode == MODE_ON) && (!targetHit)) {
-      if (temp < target) {
+      if (tempFour < 4*target) {
         HEAT_PORT |= HEAT_PIN;
       }
       else {
@@ -105,7 +100,7 @@ int main(void) {
 
     // set the display
     if (mode == MODE_ON || mode == MODE_OFF) {
-      disp.set(temp);
+      disp.set(tempFour/4.0);
     }
     else if (mode == MODE_SET) {
       disp.set(setTemp);
@@ -192,13 +187,19 @@ void initThermo(void) {
   ADCSRA |= ( (1<<ADSC) | (1<<ADATE) | (1<<ADIE) | (1<<ADPS2));
 }
 
-// read the thermocouple rolling average from the buffer
-float readThermo(void) {
-  uint16_t tot = 0;
-  for (uint8_t i=0; i<ADC_BUFFER_LEN; i++) {
-    tot += adcBuff[i];
+// convert the ADC value from the thermocouple to 4x the temperature in C
+// 4x C is chosen because it allows us to put the temp with 0.25 deg precision in a 16-bit int
+int16_t readThermo(void) {
+  int16_t c;
+  ATOMIC_BLOCK(ATOMIC_FORCEON) {
+    c = adcRead;
   }
-  tot /= ADC_BUFFER_LEN;
-  return ((tot*VREF)/1024.0)/0.005;
+  // hey look, math
+  //   C = (ADCread * VREF V)/1024 * (1 deg C)/(5 mV)
+  //   C = (ADCread * VREF V)/1024 * (200 deg C)/(1 V)
+  //   C = (ADCread * VREF * 25 deg C)/128
+  //  4C = (ADCread * VREF * 25 deg C)/32
+  c = c * VREF * 25;
+  return (c >> 5);
 }
 
