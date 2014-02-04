@@ -29,13 +29,8 @@ ISR(ENCODER_PCINT_vect) {
   e.handleChange();
 }
 
-// ISR for switch inputs
-ISR(BUTTON_PCINT_vect, ISR_NOBLOCK) {
-  b.handleChange();
-}
-
 // switch debouncer / timer
-ISR(TIMER2_OVF_vect, ISR_NOBLOCK) {
+ISR(BUTTON_TIMER_OVF_vect, ISR_NOBLOCK) {
   b.handleTimer();
 }
 
@@ -138,11 +133,6 @@ int main(void) {
         LED_PORT = (LED_PORT & ~LED_MASK) | LED_STOP;
         HEAT_PORT &= ~HEAT_PIN;
       }
-    }
-    // button holds
-    if (b.getHold(&buttons)) {
-      // do nothing
-      break;
     }
 
     // handle encoder input
