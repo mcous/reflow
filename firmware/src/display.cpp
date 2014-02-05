@@ -9,6 +9,7 @@
 
 // contructor
 Display::Display(void) {
+  /*
   // intialize the font array
   // put this shit in program memory when you get around to it
   font[0] = ( DISPLAY_SEG_A | DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_F );
@@ -26,7 +27,7 @@ Display::Display(void) {
   font[10] = ( DISPLAY_SEG_A | DISPLAY_SEG_F | DISPLAY_SEG_G | DISPLAY_SEG_E | DISPLAY_SEG_D );
   // r
   font[11] = ( DISPLAY_SEG_G | DISPLAY_SEG_E );
-
+  */
   // decimal point
   dp = DISPLAY_SEG_OFF;
 
@@ -119,6 +120,102 @@ void Display::init(void) {
   return;
 }
 
-const uint8_t font[] PROGMEM = {
+// retrieve characters from fontset
+uint8_t Display::getChar(char c) {
+  // numbers
+  if (c >= '0' && c <= '9') {
+    c -= '0';
+  }
+  // upper case letters
+  else if (c >= 'A' && c <= 'Z') {
+    c -= ('A'-10);
+  }
+  // lowercase letters
+  else if (c >= 'a' && c <= 'z') {
+    c -= ('a'-10);
+  }
+  // anything else
+  else {
+    // return a space
+    return 0;
+  }
 
+  return pgm_read_byte(&(font[(uint8_t)(c)]));
 }
+
+// character representations
+// array contains 0-9, A-Z
+const uint8_t Display::font[] PROGMEM = {
+  // 0
+  (DISPLAY_SEG_A | DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_F),
+  // 1
+  (DISPLAY_SEG_B | DISPLAY_SEG_C),
+  // 2
+  (DISPLAY_SEG_A | DISPLAY_SEG_B | DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_G),
+  // 3
+  (DISPLAY_SEG_A | DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_G),
+  // 4
+  (DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_F | DISPLAY_SEG_G),
+  // 5
+  (DISPLAY_SEG_A | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_F | DISPLAY_SEG_G),
+  // 6
+  (DISPLAY_SEG_A | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_F | DISPLAY_SEG_G),
+  // 7
+  (DISPLAY_SEG_A | DISPLAY_SEG_B | DISPLAY_SEG_C),
+  // 8
+  (DISPLAY_SEG_A | DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_F | DISPLAY_SEG_G),
+  // 9
+  (DISPLAY_SEG_A | DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_F | DISPLAY_SEG_G),
+  // A
+  (DISPLAY_SEG_A | DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_E | DISPLAY_SEG_F | DISPLAY_SEG_G),
+  // B
+  (DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_F | DISPLAY_SEG_G),
+  // C
+  (DISPLAY_SEG_A | DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_F),
+  // D
+  (DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_G),
+  // E
+  (DISPLAY_SEG_A | DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_F | DISPLAY_SEG_G),
+  // F
+  (DISPLAY_SEG_A | DISPLAY_SEG_E | DISPLAY_SEG_F | DISPLAY_SEG_G),
+  // G
+  (DISPLAY_SEG_A | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_F),
+  // H
+  (DISPLAY_SEG_C | DISPLAY_SEG_E | DISPLAY_SEG_F | DISPLAY_SEG_G),
+  // I
+  (DISPLAY_SEG_E | DISPLAY_SEG_F),
+  // J
+  (DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_E),
+  // K
+  (DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_F | DISPLAY_SEG_G),
+  // L
+  (DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_F),
+  // M
+  (DISPLAY_SEG_A | DISPLAY_SEG_C | DISPLAY_SEG_E),
+  // N
+  (DISPLAY_SEG_A | DISPLAY_SEG_C | DISPLAY_SEG_E),
+  // O
+  (DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_G),
+  // P
+  (DISPLAY_SEG_A | DISPLAY_SEG_B | DISPLAY_SEG_E | DISPLAY_SEG_F | DISPLAY_SEG_G),
+  // Q
+  (DISPLAY_SEG_A | DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_F | DISPLAY_SEG_G),
+  // R
+  (DISPLAY_SEG_E | DISPLAY_SEG_G),
+  // S
+  (DISPLAY_SEG_A | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_F | DISPLAY_SEG_G),
+  // T
+  (DISPLAY_SEG_A | DISPLAY_SEG_E | DISPLAY_SEG_F),
+  // U
+  (DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_E),
+  // V
+  (DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_F),
+  // W
+  (DISPLAY_SEG_B | DISPLAY_SEG_D | DISPLAY_SEG_F),
+  // X
+  (DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_E | DISPLAY_SEG_F | DISPLAY_SEG_G),
+  // Y
+  (DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_F | DISPLAY_SEG_G),
+  // Z
+  (DISPLAY_SEG_A | DISPLAY_SEG_D | DISPLAY_SEG_G)
+};

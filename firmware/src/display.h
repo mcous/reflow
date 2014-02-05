@@ -34,7 +34,9 @@ public:
 
 private:
   // font set
-  const uint8_t font[12] PROGMEM;
+  const static uint8_t font[36] PROGMEM;
+  // retriece character from the font set
+  uint8_t getChar(char c);
   // current digit
   uint8_t digit;
   // current display for the digits

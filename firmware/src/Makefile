@@ -36,7 +36,7 @@ SRC = $(PRJ).cpp display.cpp buttons.cpp encoder.cpp
 # e.g. INC = ../../EyeToSee ../../YouSART
 INC = 
 # any defines to send the compiler
-DEF = 
+DEF = F_CPU=$(CLK)
 # directories
 OBJDIR = ../bin/obj
 EXEDIR = ../bin/exe
@@ -51,7 +51,7 @@ INCLUDES := $(addprefix -I,$(INC))
 # defines
 DEFINES  := $(addprefix -D,$(DEF))
 # c flags
-CFLAGS    = -Wall -Os -DF_CPU=$(CLK) $(DEFINES) -mmcu=$(MCU) $(INCLUDES)
+CFLAGS    = -Wall -Os -funsigned-char $(DEFINES) -mmcu=$(MCU) $(INCLUDES)
 # any aditional flags for c++
 CPPFLAGS  =
 # linker flags
@@ -95,11 +95,11 @@ disasm: $(EXEDIR)/$(PRJ).elf
 clean:
 	rm -f $(EXEDIR)/$(PRJ).elf $(OBJ)
 
-# elf file
+# link the objects into an elf
 $(EXEDIR)/$(PRJ).elf: $(OBJDEPS)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $(EXEDIR)/$(PRJ).elf $(OBJ)
 
-# hex file
+# create a hex from the elf
 $(EXEDIR)/$(PRJ).hex: $(EXEDIR)/$(PRJ).elf
 	rm -f $(EXEDIR)/$(PRJ).hex
 	$(OBJCOPY) -j .text -j .data -O ihex $(EXEDIR)/$(PRJ).elf $(EXEDIR)/$(PRJ).hex
