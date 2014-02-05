@@ -14,12 +14,22 @@ class Celcius {
 public:
   // public constructor
   Celcius(void);
-  // temperature setter
+  // temperature setters
+  // set to a temperature in celcius
   void set(int16_t c);
+  // set the temperature with an int that is a power of 2 multiple of the temperature
+  // c is the integer
+  // power is the power of two by which the int is scaled
+  // example - c=200, power=1 will set the temperature to 100
+  void setScaled(int16_t c, uint8_t power);
+  
   // temperature getter
-  int16_t get(void);
+  // returns the internal representation (i.e. 4*celcius)
+  int16_t getScaled(void);
 private:
   // signed 16-bit int to hold the temperature
+  // internal representation is 4x the temperature
+  // this gives us 0.25 degree resolution in an int
   int16_t celcius;
 };
 

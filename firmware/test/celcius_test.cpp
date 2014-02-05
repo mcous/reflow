@@ -31,21 +31,52 @@ class CelciusTest : public ::testing::Test {
   }
 
   // Objects declared here can be used by all tests in the test case for Foo.
+  Celcius c1;
+  Celcius c2;
 };
 
 // tests that a Celcius object gets intialized at 0
 TEST_F(CelciusTest, IsInitiallyZero) {
   Celcius c;
-  EXPECT_EQ(0, c.get());
+  EXPECT_EQ(0, c.getScaled());
 }
 
 // tests that the setter and getter work
+// REMEMBER: getter returns 4*temp
 TEST_F(CelciusTest, SetterAndGetterWork) {
-  Celcius c;
-  c.set(10);
-  EXPECT_EQ(10, c.get());
-  c.set(20);
-  EXPECT_EQ(20, c.get());
+  c1.set(10);
+  EXPECT_EQ(4*10, c1.getScaled());
+  c2.set(-20);
+  EXPECT_EQ(4*-20, c2.getScaled());
+}
+
+// tests that setter works at powers of two other than 0 and 2
+// since interanl representation is 2^2, lets try scales that are both lesser and greater than this scale
+// using 2^3 and 2^1
+TEST_F(CelciusTest, ScaledSetterWorks) {
+  int16_t temp = 800;
+  // try to set the temperature to 800/8 = 100
+  // getScaled should return 100*4 = 400
+  c1.setScaled(temp, 3);
+  EXPECT_EQ(4*100, c1.getScaled());
+  // try to set the temperature to 800/2 = 400
+  // get scaled should return 400*4 = 1600
+  c2.setScaled(temp, 1);
+  EXPECT_EQ(4*400, c2.getScaled());
+
+}
+
+// same test as above with negative numbers
+TEST_F(CelciusTest, ScaledSetterWorksWithNegativeTemps) {
+  int16_t temp = -800;
+  // try to set the temperature to -800/8 = -100
+  // getScaled should return -100*4 = -400
+  c1.setScaled(temp, 3);
+  EXPECT_EQ(-400, c1.getScaled());
+  // try to set the temperature to -800/2 = -400
+  // get scaled should return -400*4 = -1600
+  c2.setScaled(temp, 1);
+  EXPECT_EQ(-1600, c2.getScaled());
 }
 
 }  // namespace
