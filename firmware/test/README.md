@@ -5,5 +5,7 @@ Some classes for the reflow project do not interact with the hardware, so (in th
 
 To test:
 
+1. Download [Google Test source](https://code.google.com/p/googletest/downloads/list) and place in a directory called `gtest` at the same level as the `reflow` directory
+2. `$ cd reflow/firmware/test`
 1. `$ make`
 2. `$ ./reflow_tests`
