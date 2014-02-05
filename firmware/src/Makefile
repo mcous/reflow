@@ -52,7 +52,7 @@ DEFINES  := $(addprefix -D,$(DEF))
 # c flags
 CFLAGS    = -Wall -Os -DF_CPU=$(CLK) $(DEFINES) -mmcu=$(MCU) $(INCLUDES)
 # any aditional flags for c++
-CPPFLAGS  =
+CPPFLAGS  = -fno-exceptions
 
 # executables
 AVRDUDE = avrdude -c $(PRG) -p $(MCU)
@@ -72,7 +72,7 @@ OBJ      := $(addprefix $(OBJDIR)/,$(notdir $(OBJDEPS)))
 all: $(EXEDIR)/$(PRJ).hex
 
 # test programmer connectivity
-test:
+testflash:
 	$(AVRDUDE) -v
 
 # flash program to mcu
