@@ -63,7 +63,6 @@ TEST_F(CelciusTest, ScaledSetterWorks) {
   // get scaled should return 400*4 = 1600
   c2.setScaled(temp, 1);
   EXPECT_EQ(4*400, c2.getScaled());
-
 }
 
 // same test as above with negative numbers
@@ -77,6 +76,73 @@ TEST_F(CelciusTest, ScaledSetterWorksWithNegativeTemps) {
   // get scaled should return -400*4 = -1600
   c2.setScaled(temp, 1);
   EXPECT_EQ(-1600, c2.getScaled());
+}
+
+TEST_F(CelciusTest, BooleanOperatorsWork) {
+  Celcius lhs;
+  Celcius rhs;
+  lhs.set(100);
+  rhs.set(100);
+
+  // test equals and not equals
+  EXPECT_FALSE(lhs != rhs);
+  EXPECT_TRUE(lhs == rhs);
+  EXPECT_TRUE(lhs >= rhs);
+  EXPECT_TRUE(lhs <= rhs);
+  rhs.set(99);
+  EXPECT_TRUE(lhs != rhs);
+  EXPECT_FALSE(lhs == rhs);
+  
+  // test greater than
+  EXPECT_TRUE(lhs > rhs);
+  EXPECT_TRUE(lhs >= rhs);
+  EXPECT_FALSE(lhs < rhs);
+  EXPECT_FALSE(lhs <= rhs);
+
+  // test less than
+  rhs.set(101);
+  EXPECT_FALSE(lhs > rhs);
+  EXPECT_FALSE(lhs >= rhs);
+  EXPECT_TRUE(lhs < rhs);
+  EXPECT_TRUE(lhs <= rhs);
+}
+
+TEST_F(CelciusTest, BooleanOperatorsWithIntsWork) {
+  Celcius lhs;
+  lhs.set(100);
+
+  // test equals and not equals
+  EXPECT_FALSE(lhs != 100);
+  EXPECT_TRUE(lhs == 100);
+  EXPECT_TRUE(lhs >= 100);
+  EXPECT_TRUE(lhs <= 100);
+  EXPECT_TRUE(lhs != 99);
+  EXPECT_FALSE(lhs == 99);
+  
+  // test greater than
+  EXPECT_TRUE(lhs > 99);
+  EXPECT_TRUE(lhs >= 99);
+  EXPECT_FALSE(lhs < 99);
+  EXPECT_FALSE(lhs <= 99);
+
+  // test less than
+  EXPECT_FALSE(lhs > 101);
+  EXPECT_FALSE(lhs >= 101);
+  EXPECT_TRUE(lhs < 101);
+  EXPECT_TRUE(lhs <= 101);
+}
+
+TEST_F(CelciusTest, CompoundAssignmentWorks) {
+  Celcius c;
+  c.set(100);
+  // try to add 50 to the temperature
+  c += 50;
+  // getScaled should return 150*4 = 600
+  EXPECT_EQ(c.getScaled(), 600);
+  // now try to subtract 25
+  c -= 25;
+  // get scaled should return 125*4 = 500
+  EXPECT_EQ(c.getScaled(), 500);
 }
 
 }  // namespace
