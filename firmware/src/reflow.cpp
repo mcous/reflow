@@ -21,7 +21,7 @@ ISR(ADC_vect) {
 
 // ISR for temperature readings
 ISR(TIMER1_OVF_vect) {
-  tempFour = readThermo();
+  tempCheck = true;
 }
 
 // ISR for rotary encoder
@@ -47,7 +47,7 @@ int main(void) {
   // ISR volatiles
   // should already be 0 but hey safety first
   adcRead = 0;
-  tempFour = 0;
+  tempCheck = false;
 
   // get the display ready
   Display disp;
@@ -61,8 +61,11 @@ int main(void) {
   // temperature
   initThermo();
   bool targetHit = false;
-  float setTemp = 200;
-  float target = 0;
+  Celsius temp;
+  Celsius setTemp;
+  Celsius target;
+  setTemp.set(200);
+
   // perform temperature readings about every 30 ms
   // ensure timer0 settings are cleared out
   TCCR1A = 0;
@@ -82,14 +85,19 @@ int main(void) {
 
   // sideways eight loop
   for (;;) {
+    // check the temperature if it's time
+    if (tempCheck) {
+      tempCheck = false;
+      temp = readThermo();
+    }
     // check for open thermocouple
-    if (tempFour > 1600) {
+    if (temp > 1600) {
       mode = MODE_ERR;
     }
 
     // handle the temperature if we're on
     if ((mode == MODE_ON) && (!targetHit)) {
-      if (tempFour < 4*target) {
+      if (temp < target) {
         HEAT_PORT |= HEAT_PIN;
       }
       else {
@@ -100,10 +108,10 @@ int main(void) {
 
     // set the display
     if (mode == MODE_ON || mode == MODE_OFF) {
-      disp.set(tempFour/4.0);
+      disp.set(temp.getScaled()/4.0);
     }
     else if (mode == MODE_SET) {
-      disp.set(setTemp);
+      disp.set(setTemp.getScaled()/4.0);
     }
     else if (mode == MODE_ERR) {
       disp.setErr(ERROR_THERMO_OPEN);
@@ -143,10 +151,10 @@ int main(void) {
     // handle encoder input
     int8_t enc = e.getChange();
     if (mode == MODE_SET) {
-      setTemp += 0.5*enc;
+      setTemp.setScaled(setTemp.getScaled() + 2*enc, TEMP_POWER);
       // underflow protection
       if (setTemp < 0) {
-        setTemp = 0;
+        setTemp.set(0);
       }
     }
 
@@ -189,7 +197,8 @@ void initThermo(void) {
 
 // convert the ADC value from the thermocouple to 4x the temperature in C
 // 4x C is chosen because it allows us to put the temp with 0.25 deg precision in a 16-bit int
-int16_t readThermo(void) {
+Celsius readThermo(void) {
+  Celsius ret;
   int16_t c;
   ATOMIC_BLOCK(ATOMIC_FORCEON) {
     c = adcRead;
@@ -200,6 +209,8 @@ int16_t readThermo(void) {
   //   C = (ADCread * VREF * 25 deg C)/128
   //  4C = (ADCread * VREF * 25 deg C)/32
   c = c * VREF * 25;
-  return (c >> 5);
+  c >>= 5;
+  ret.setScaled(c, TEMP_POWER);
+  return ret;
 }
 

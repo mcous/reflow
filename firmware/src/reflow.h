@@ -11,6 +11,7 @@
 // necessary includes
 #include "buttons.h"
 #include "encoder.h"
+#include "celsius.h"
 
 // operating modes
 #define MODE_OFF  0
@@ -31,7 +32,8 @@ Encoder e;
 
 // ISR volatiles
 volatile uint16_t adcRead;
-volatile int16_t tempFour;
+volatile bool tempCheck;
+//volatile int16_t tempFour;
 
 // function prototypes
 int main(void);
@@ -42,7 +44,7 @@ void initHeat(void);
 // intialize thermocouple reading
 void initThermo(void);
 // read the thermocouple
-// returns 4x the temperature in C
-int16_t readThermo(void);
+// returns the temperature in a Celsius object
+Celsius readThermo(void);
 
 #endif
