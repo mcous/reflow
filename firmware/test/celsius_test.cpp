@@ -1,19 +1,19 @@
-#include "../src/celcius.h"
+#include "../src/celsius.h"
 #include "gtest/gtest.h"
 
 namespace {
 
 // The fixture for testing class Foo.
-class CelciusTest : public ::testing::Test {
+class CelsiusTest : public ::testing::Test {
  protected:
   // You can remove any or all of the following functions if its body
   // is empty.
 
-  CelciusTest() {
+  CelsiusTest() {
     // You can do set-up work for each test here.
   }
 
-  virtual ~CelciusTest() {
+  virtual ~CelsiusTest() {
     // You can do clean-up work that doesn't throw exceptions here.
   }
 
@@ -31,19 +31,19 @@ class CelciusTest : public ::testing::Test {
   }
 
   // Objects declared here can be used by all tests in the test case for Foo.
-  Celcius c1;
-  Celcius c2;
+  Celsius c1;
+  Celsius c2;
 };
 
-// tests that a Celcius object gets intialized at 0
-TEST_F(CelciusTest, IsInitiallyZero) {
-  Celcius c;
+// tests that a Celsius object gets intialized at 0
+TEST_F(CelsiusTest, IsInitiallyZero) {
+  Celsius c;
   EXPECT_EQ(0, c.getScaled());
 }
 
 // tests that the setter and getter work
 // REMEMBER: getter returns 4*temp
-TEST_F(CelciusTest, SetterAndGetterWork) {
+TEST_F(CelsiusTest, SetterAndGetterWork) {
   c1.set(10);
   EXPECT_EQ(4*10, c1.getScaled());
   c2.set(-20);
@@ -53,7 +53,7 @@ TEST_F(CelciusTest, SetterAndGetterWork) {
 // tests that setter works at powers of two other than 0 and 2
 // since interanl representation is 2^2, lets try scales that are both lesser and greater than this scale
 // using 2^3 and 2^1
-TEST_F(CelciusTest, ScaledSetterWorks) {
+TEST_F(CelsiusTest, ScaledSetterWorks) {
   int16_t temp = 800;
   // try to set the temperature to 800/8 = 100
   // getScaled should return 100*4 = 400
@@ -66,7 +66,7 @@ TEST_F(CelciusTest, ScaledSetterWorks) {
 }
 
 // same test as above with negative numbers
-TEST_F(CelciusTest, ScaledSetterWorksWithNegativeTemps) {
+TEST_F(CelsiusTest, ScaledSetterWorksWithNegativeTemps) {
   int16_t temp = -800;
   // try to set the temperature to -800/8 = -100
   // getScaled should return -100*4 = -400
@@ -78,9 +78,9 @@ TEST_F(CelciusTest, ScaledSetterWorksWithNegativeTemps) {
   EXPECT_EQ(-1600, c2.getScaled());
 }
 
-TEST_F(CelciusTest, BooleanOperatorsWork) {
-  Celcius lhs;
-  Celcius rhs;
+TEST_F(CelsiusTest, BooleanOperatorsWork) {
+  Celsius lhs;
+  Celsius rhs;
   lhs.set(100);
   rhs.set(100);
 
@@ -107,8 +107,8 @@ TEST_F(CelciusTest, BooleanOperatorsWork) {
   EXPECT_TRUE(lhs <= rhs);
 }
 
-TEST_F(CelciusTest, BooleanOperatorsWithIntsWork) {
-  Celcius lhs;
+TEST_F(CelsiusTest, BooleanOperatorsWithIntsWork) {
+  Celsius lhs;
   lhs.set(100);
 
   // test equals and not equals
@@ -132,8 +132,8 @@ TEST_F(CelciusTest, BooleanOperatorsWithIntsWork) {
   EXPECT_TRUE(lhs <= 101);
 }
 
-TEST_F(CelciusTest, CompoundAssignmentWorks) {
-  Celcius c;
+TEST_F(CelsiusTest, CompoundAssignmentWorks) {
+  Celsius c;
   c.set(100);
   // try to add 50 to the temperature
   c += 50;

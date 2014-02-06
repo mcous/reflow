@@ -32,7 +32,7 @@ CXXFLAGS += -g -Wall -Wextra -pthread
 
 # All tests produced by this Makefile.  Remember to add new tests you
 # created to the list.
-TESTS = celcius_test
+TESTS = celsius_test
 
 # All Google Test headers.  Usually you shouldn't change this
 # definition.
@@ -71,11 +71,11 @@ gtest_main.a : gtest-all.o gtest_main.o
 # gtest_main.a, depending on whether it defines its own main()
 # function.
 
-celcius.o : $(FIRM_DIR)/celcius.cpp $(FIRM_DIR)/celcius.h $(GTEST_HEADERS)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(FIRM_DIR)/celcius.cpp
+celsius.o : $(FIRM_DIR)/celsius.cpp $(FIRM_DIR)/celsius.h $(GTEST_HEADERS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(FIRM_DIR)/celsius.cpp
 
-celcius_test.o : $(USER_DIR)/celcius_test.cpp $(FIRM_DIR)/celcius.h $(GTEST_HEADERS)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/celcius_test.cpp
+celsius_test.o : $(USER_DIR)/celsius_test.cpp $(FIRM_DIR)/celsius.h $(GTEST_HEADERS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/celsius_test.cpp
 
-celcius_test : celcius.o celcius_test.o gtest.a
+celsius_test : celsius.o celsius_test.o gtest.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
