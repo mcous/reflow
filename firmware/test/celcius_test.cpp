@@ -120,10 +120,10 @@ TEST_F(CelciusTest, BooleanOperatorsWithIntsWork) {
   EXPECT_FALSE(lhs == 99);
   
   // test greater than
-  EXPECT_TRUE(lhs > 99);
-  EXPECT_TRUE(lhs >= 99);
-  EXPECT_FALSE(lhs < 99);
-  EXPECT_FALSE(lhs <= 99);
+  EXPECT_TRUE(lhs > -99);
+  EXPECT_TRUE(lhs >= -99);
+  EXPECT_FALSE(lhs < -99);
+  EXPECT_FALSE(lhs <= -99);
 
   // test less than
   EXPECT_FALSE(lhs > 101);

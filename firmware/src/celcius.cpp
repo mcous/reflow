@@ -7,10 +7,6 @@
 
 #include "celcius.h"
 
-// internal representation is the temp * 2^TEMP_POWER
-// i.e. four times the temperature
-#define TEMP_POWER 2
-
 // public constructor
 // initializes temperature to 0
 Celcius::Celcius(void) {
@@ -20,6 +16,16 @@ Celcius::Celcius(void) {
 // temperature setter
 void Celcius::set(int16_t c) {
   setScaled(c, 0);
+}
+
+// set to a temperature in celcius or farenheit
+void set(int16_t t, uint8_t units) {
+  if (units == TEMP_UNITS_C) {
+    set(t);
+  }
+  else {
+    
+  }
 }
 
 void Celcius::setScaled(int16_t c, uint8_t power) {
