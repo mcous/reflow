@@ -14,8 +14,8 @@
 // i.e. four times the temperature
 #define TEMP_POWER 2
 // define celsius and 0 and farenheit as 1
-#define TEMP_UNITS_C  0
-#define TEMP_UNITS_F  1
+#define TEMP_UNIT_C  0
+#define TEMP_UNIT_F  1
 
 class Celsius {
 public:
@@ -24,8 +24,6 @@ public:
   // temperature setters
   // set to a temperature in celsius
   void set(int16_t c);
-  // set to a temperature in celsius or farenheit
-  void set(int16_t t, uint8_t units);
   // set the temperature with an int that is a power of 2 multiple of the temperature
   // c is the integer in celsius
   // power is the power of two by which the int is scaled
@@ -35,6 +33,15 @@ public:
   // temperature getter
   // returns the internal representation (i.e. 4*celsius)
   int16_t getScaled(void);
+
+  // convert temperature to a 4 digit string (with max 1 decimal point)
+  // t - text buder
+  // returns - number of chars written to buffer
+  uint8_t toString(char *t);
+  // convert temperature to a string in a selected unit
+  // if farehnheit is selected, there will be no decimal point
+  uint8_t toString(const uint8_t unit, char *t);
+
 
   // declare that boolean operators are friends
   friend bool operator==(const Celsius& lhs, const Celsius& rhs);
@@ -50,13 +57,22 @@ public:
   friend bool operator<=(const Celsius& lhs, const int16_t& rhs);
   friend bool operator>=(const Celsius& lhs, const int16_t& rhs);
   
+  // addition and subtraction compound assignment with Celcius
+  inline Celsius& operator+=(const Celsius& rhs) {
+    this->celsius += rhs.celsius;
+    return *this;
+  }
+  inline Celsius& operator-=(const Celsius& rhs) {
+    this->celsius -= rhs.celsius;
+    return *this;
+  }
   // also addition and subtraction compound assignment with ints
   inline Celsius& operator+=(const int16_t& rhs) {
-    this->setScaled(this->getScaled() + 4*rhs, 2);
+    this->celsius += (rhs << TEMP_POWER);
     return *this;
   }
   inline Celsius& operator-=(const int16_t& rhs) {
-    this->setScaled(this->getScaled() - 4*rhs, 2);
+    this->celsius -= (rhs << TEMP_POWER);
     return *this;
   }
 
@@ -69,18 +85,24 @@ private:
 
 // time to overload some opperators
 // gonna need the comparison operators
-inline bool operator==(const Celsius& lhs, const Celsius& rhs){return (lhs.celsius == rhs.celsius);}
-inline bool operator!=(const Celsius& lhs, const Celsius& rhs){return !operator==(lhs,rhs);}
-inline bool operator< (const Celsius& lhs, const Celsius& rhs){return (lhs.celsius < rhs.celsius);}
-inline bool operator> (const Celsius& lhs, const Celsius& rhs){return  operator< (rhs,lhs);}
-inline bool operator<=(const Celsius& lhs, const Celsius& rhs){return !operator> (lhs,rhs);}
-inline bool operator>=(const Celsius& lhs, const Celsius& rhs){return !operator< (lhs,rhs);}
-inline bool operator==(const Celsius& lhs, const int16_t& rhs){return (lhs.celsius == rhs<<TEMP_POWER);}
-inline bool operator!=(const Celsius& lhs, const int16_t& rhs){return !operator==(lhs,rhs);}
-inline bool operator< (const Celsius& lhs, const int16_t& rhs){return (lhs.celsius < rhs<<TEMP_POWER);}
-inline bool operator> (const Celsius& lhs, const int16_t& rhs){return (lhs.celsius > rhs<<TEMP_POWER);}
-inline bool operator<=(const Celsius& lhs, const int16_t& rhs){return !operator> (lhs,rhs);}
-inline bool operator>=(const Celsius& lhs, const int16_t& rhs){return !operator< (lhs,rhs);}
+inline bool operator==(const Celsius& lhs, const Celsius& rhs) {return (lhs.celsius == rhs.celsius);}
+inline bool operator!=(const Celsius& lhs, const Celsius& rhs) {return !operator==(lhs,rhs);}
+inline bool operator< (const Celsius& lhs, const Celsius& rhs) {return (lhs.celsius < rhs.celsius);}
+inline bool operator> (const Celsius& lhs, const Celsius& rhs) {return  operator< (rhs,lhs);}
+inline bool operator<=(const Celsius& lhs, const Celsius& rhs) {return !operator> (lhs,rhs);}
+inline bool operator>=(const Celsius& lhs, const Celsius& rhs) {return !operator< (lhs,rhs);}
+inline bool operator==(const Celsius& lhs, const int16_t& rhs) {return (lhs.celsius == rhs<<TEMP_POWER);}
+inline bool operator!=(const Celsius& lhs, const int16_t& rhs) {return !operator==(lhs,rhs);}
+inline bool operator< (const Celsius& lhs, const int16_t& rhs) {return (lhs.celsius < rhs<<TEMP_POWER);}
+inline bool operator> (const Celsius& lhs, const int16_t& rhs) {return (lhs.celsius > rhs<<TEMP_POWER);}
+inline bool operator<=(const Celsius& lhs, const int16_t& rhs) {return !operator> (lhs,rhs);}
+inline bool operator>=(const Celsius& lhs, const int16_t& rhs) {return !operator< (lhs,rhs);}
+// give us plus and minus just because
+inline Celsius operator+(Celsius lhs, const Celsius& rhs) {lhs+=rhs; return lhs;}
+inline Celsius operator+(Celsius lhs, const int16_t& rhs) {lhs+=rhs; return lhs;}
+inline Celsius operator-(Celsius lhs, const Celsius& rhs) {lhs-=rhs; return lhs;}
+inline Celsius operator-(Celsius lhs, const int16_t& rhs) {lhs-=rhs; return lhs;}
+
 
 
 #endif

@@ -132,7 +132,7 @@ TEST_F(CelsiusTest, BooleanOperatorsWithIntsWork) {
   EXPECT_TRUE(lhs <= 101);
 }
 
-TEST_F(CelsiusTest, CompoundAssignmentWorks) {
+TEST_F(CelsiusTest, CompoundAssignmentWorksWithCelsius) {
   Celsius c;
   c.set(100);
   // try to add 50 to the temperature
@@ -143,6 +143,183 @@ TEST_F(CelsiusTest, CompoundAssignmentWorks) {
   c -= 25;
   // get scaled should return 125*4 = 500
   EXPECT_EQ(c.getScaled(), 500);
+}
+
+TEST_F(CelsiusTest, CompoundAssignmentWorksWithInts) {
+  Celsius c;
+  c1.set(50);
+  c2.set(25);
+  c.set(100);
+  // try to add 50 to the temperature
+  c += c1;
+  // getScaled should return 150*4 = 600
+  EXPECT_EQ(c.getScaled(), 600);
+  // now try to subtract 25
+  c -= c2;
+  // get scaled should return 125*4 = 500
+  EXPECT_EQ(c.getScaled(), 500);
+}
+
+TEST_F(CelsiusTest, PlusAndMinusWithIntsWorks) {
+  Celsius c;
+  c1.set(100);
+  c = c1 + 50;
+  EXPECT_EQ(c.getScaled(), 600);
+  c = c1 - 25;
+  EXPECT_EQ(c.getScaled(), 300);
+}
+
+TEST_F(CelsiusTest, PlusAndMinusWithCelsiusWorks) {
+  Celsius c;
+  c1.set(100);
+  c2.set(25);
+  c = c1 + c2;
+  EXPECT_EQ(c.getScaled(), 500);
+  c = c1 - c2;
+  EXPECT_EQ(c.getScaled(), 300);
+}
+
+TEST_F(CelsiusTest, ToStringWorksForPositive) {
+  Celsius c;
+  uint8_t strLen;
+  char str[7] = {'\0', '\0', '\0', '\0', '\0', '\0', '\0'};
+
+  // an Celsius object just intialized should have a temp of 0
+  // this temperature should stringify to "0.0", with strlen 3
+  //char str1[6];
+  strLen = c.toString(str);
+  EXPECT_STREQ("0.0", str);
+  EXPECT_EQ(strLen, 3);
+  for(uint8_t i=0; i<strLen; i++) {
+    str[i] = '\0';
+  }
+
+  // now let's try 100.0 degrees
+  c.set(100);
+  strLen = c.toString(str);
+  EXPECT_STREQ("100.0", str);
+  EXPECT_EQ(strLen, 5);
+  for(uint8_t i=0; i<strLen; i++) {
+    str[i] = '\0';
+  }
+
+  // 4567.25 degrees
+  // x4 = 18269
+  c.setScaled(18269, TEMP_POWER);
+  strLen = c.toString(str);
+  EXPECT_STREQ("4567.0", str);
+  EXPECT_EQ(strLen, 6);
+  for(uint8_t i=0; i<strLen; i++) {
+    str[i] = '\0';
+  }
+
+  // 982.75 degrees
+  // x4 = 3931
+  c.setScaled(3931, TEMP_POWER);
+  strLen = c.toString(str);
+  EXPECT_STREQ("982.5", str);
+  EXPECT_EQ(strLen, 5);
+  for(uint8_t i=0; i<strLen; i++) {
+    str[i] = '\0';
+  }
+
+  // 32.5 degrees
+  // x4 = 65
+  c.setScaled(130, TEMP_POWER);
+  strLen = c.toString(str);
+  EXPECT_STREQ("32.5", str);
+  EXPECT_EQ(strLen, 4);
+}
+
+TEST_F(CelsiusTest, ToStringWorksForNegative) {
+  Celsius c;
+  uint8_t strLen;
+  char str[8] = {'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'};
+
+  // now let's try -100.0 degrees
+  c.set(-100);
+  strLen = c.toString(str);
+  EXPECT_STREQ("-100.0", str);
+  EXPECT_EQ(strLen, 6);
+  for(uint8_t i=0; i<strLen; i++) {
+    str[i] = '\0';
+  }
+
+  // 4567.25 degrees
+  // x4 = 18269
+  c.setScaled(-18269, TEMP_POWER);
+  strLen = c.toString(str);
+  EXPECT_STREQ("-4567.0", str);
+  EXPECT_EQ(strLen, 7);
+  for(uint8_t i=0; i<strLen; i++) {
+    str[i] = '\0';
+  }
+
+  // 982.75 degrees
+  // x4 = 3931
+  c.setScaled(-3931, TEMP_POWER);
+  strLen = c.toString(str);
+  EXPECT_STREQ("-982.5", str);
+  EXPECT_EQ(strLen, 6);
+  for(uint8_t i=0; i<strLen; i++) {
+    str[i] = '\0';
+  }
+
+  // 32.5 degrees
+  // x4 = 65
+  c.setScaled(-130, TEMP_POWER);
+  strLen = c.toString(str);
+  EXPECT_STREQ("-32.5", str);
+  EXPECT_EQ(strLen, 5);
+}
+
+TEST_F(CelsiusTest, ToStringWorksForFahrenheit) {
+  Celsius c;
+  uint8_t strLen;
+  char str[5] = {'\0', '\0', '\0', '\0', '\0'};
+
+  // make sure unit selectable function does celsius properly
+  strLen = c.toString(TEMP_UNIT_C, str);
+  EXPECT_STREQ("0.0", str);
+  EXPECT_EQ(strLen, 3);
+  for(uint8_t i=0; i<strLen; i++) {
+    str[i] = '\0';
+  }
+
+  // now let's try it with fahrenheit
+  strLen = c.toString(TEMP_UNIT_F, str);
+  EXPECT_STREQ("32", str);
+  EXPECT_EQ(strLen, 2);
+  for(uint8_t i=0; i<strLen; i++) {
+    str[i] = '\0';
+  }
+
+  // boiling point
+  c.set(100);
+  strLen = c.toString(TEMP_UNIT_F, str);
+  EXPECT_STREQ("212", str);
+  EXPECT_EQ(strLen, 3);
+  for(uint8_t i=0; i<strLen; i++) {
+    str[i] = '\0';
+  }
+
+  // -40 degrees
+  c.set(-40);
+  strLen = c.toString(TEMP_UNIT_F, str);
+  EXPECT_STREQ("-40", str);
+  EXPECT_EQ(strLen, 3);
+  for(uint8_t i=0; i<strLen; i++) {
+    str[i] = '\0';
+  }
+
+  // something with a decimal
+  c.setScaled(-815, TEMP_POWER);
+  strLen = c.toString(TEMP_UNIT_F, str);
+  EXPECT_STREQ("-334", str);
+  EXPECT_EQ(strLen, 4);
+  for(uint8_t i=0; i<strLen; i++) {
+    str[i] = '\0';
+  }
 }
 
 }  // namespace
