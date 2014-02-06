@@ -31,7 +31,7 @@ LFU = 0xE2
 HFU = 0xDF
 EFU = 0x05
 # program source files
-SRC = $(PRJ).cpp display.cpp buttons.cpp encoder.cpp
+SRC = $(PRJ).cpp display.cpp buttons.cpp encoder.cpp celsius.cpp
 # where to look for included libraries (consisting of .c/.cpp files and .h files)
 # e.g. INC = ../../EyeToSee ../../YouSART
 INC = 

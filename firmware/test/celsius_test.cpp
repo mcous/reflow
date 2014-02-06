@@ -179,6 +179,22 @@ TEST_F(CelsiusTest, PlusAndMinusWithCelsiusWorks) {
   EXPECT_EQ(c.getScaled(), 300);
 }
 
+TEST_F(CelsiusTest, UnaryIncrementWorks) {
+  Celsius c;
+  EXPECT_EQ((c++).getScaled(), 0);
+  EXPECT_EQ(c.getScaled(), 1);
+  EXPECT_EQ((++c).getScaled(), 2);
+  EXPECT_EQ(c.getScaled(), 2);
+}
+
+TEST_F(CelsiusTest, UnaryDecrementWorks) {
+  Celsius c;
+  EXPECT_EQ((c--).getScaled(), 0);
+  EXPECT_EQ(c.getScaled(), -1);
+  EXPECT_EQ((--c).getScaled(), -2);
+  EXPECT_EQ(c.getScaled(), -2);
+}
+
 TEST_F(CelsiusTest, ToStringWorksForPositive) {
   Celsius c;
   uint8_t strLen;
