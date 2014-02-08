@@ -29,7 +29,7 @@ Display::Display(void) {
   font[11] = ( DISPLAY_SEG_G | DISPLAY_SEG_E );
   */
   // decimal point
-  dp = DISPLAY_SEG_OFF;
+  //dp = DISPLAY_SEG_OFF;
 
   // all digits off
   digit = 0;
@@ -38,6 +38,7 @@ Display::Display(void) {
   }
 }
 
+/*
 // public set function
 void Display::set(float num) {
   // whole digit places
@@ -84,13 +85,14 @@ void Display::set(float num) {
 
   return;
 }
+*/
 
 // set display error
-void Display::setErr(uint8_t err) {
-  err += '0';
-  char e[4] = {'e', 'r', 'r', (char)err};
-  set(e, 4);
-}
+// void Display::setErr(uint8_t err) {
+//   err += '0';
+//   char e[4] = {'e', 'r', 'r', (char)err};
+//   set(e, 4);
+// }
 
 void Display::set(char *s, uint8_t strLen) {
   // segments holder
@@ -102,7 +104,7 @@ void Display::set(char *s, uint8_t strLen) {
   // loop through the string
   do {
     if (s[i] != '.') {
-      uint8_t d = getChar(i);
+      uint8_t d = getChar(s[i]);
       segs = 0;
       // convert 0b0GFDECBA to pins
       // sorry, just went with an unrolled loop because life is hell
@@ -139,7 +141,8 @@ void Display::set(char *s, uint8_t strLen) {
       j--;
     }
     else {
-      digDisp[j-1] |= DISPLAY_SEG_DP;
+      // put a decimal on the previous digit
+      digDisp[j] |= DISPLAY_SEG_DP;
     }
     i++;
   } while (j > 0 && i < strLen);
@@ -147,62 +150,63 @@ void Display::set(char *s, uint8_t strLen) {
   // blank the rest
   while (j > 0) {
     digDisp[j-1] = 0;
+    j--;
   }
   // right justify
   // implement later
 }
 
+// void Display::refresh(void) {
+//   // increment or overflow
+//   digit = (digit>=DISPLAY_NUM_DIGITS-1) ? 0 : digit+1;
+//   // rearrange
+//   uint8_t d = getChar('0'+digDisp[digit]);
+//   uint8_t segs = 0;
+//   if (d & 0x1) {
+//     segs |= DISPLAY_SEG_A;
+//   }
+//   // segment B
+//   if (d & 0x2) {
+//     segs |= DISPLAY_SEG_B;
+//   }
+//   // segment C
+//   if (d & 0x4) {
+//     segs |= DISPLAY_SEG_C;
+//   }
+//   // segment D
+//   if (d & 0x8) {
+//     segs |= DISPLAY_SEG_D;
+//   }
+//   // segment E
+//   if (d & 0x10) {
+//     segs |= DISPLAY_SEG_E;
+//   }
+//   // segment F
+//   if (d & 0x20) {
+//     segs |= DISPLAY_SEG_F;
+//   }
+//   // segment G
+//   if (d & 0x40) {
+//     segs |= DISPLAY_SEG_G;
+//   }
+//   digDisp[digit] = segs;
+//   // enable the digit
+//   DISPLAY_DIG_PORT = (DISPLAY_DIG_PORT & ~DISPLAY_DIG_MASK) | (1<<digit);
+//   DISPLAY_SEG_PORT = segs;
+//   // decimal point if necessary
+//   if (digit == dp) {
+//     DISPLAY_SEG_PORT |= DISPLAY_SEG_DP;
+//   }
+//   return;
+// }
+
 void Display::refresh(void) {
   // increment or overflow
   digit = (digit>=DISPLAY_NUM_DIGITS-1) ? 0 : digit+1;
-  // rearrange
-  uint8_t d = getChar('0'+digDisp[digit]);
-  uint8_t segs = 0;
-  if (d & 0x1) {
-    segs |= DISPLAY_SEG_A;
-  }
-  // segment B
-  if (d & 0x2) {
-    segs |= DISPLAY_SEG_B;
-  }
-  // segment C
-  if (d & 0x4) {
-    segs |= DISPLAY_SEG_C;
-  }
-  // segment D
-  if (d & 0x8) {
-    segs |= DISPLAY_SEG_D;
-  }
-  // segment E
-  if (d & 0x10) {
-    segs |= DISPLAY_SEG_E;
-  }
-  // segment F
-  if (d & 0x20) {
-    segs |= DISPLAY_SEG_F;
-  }
-  // segment G
-  if (d & 0x40) {
-    segs |= DISPLAY_SEG_G;
-  }
-  digDisp[digit] = segs;
-  // enable the digit
-  DISPLAY_DIG_PORT = (DISPLAY_DIG_PORT & ~DISPLAY_DIG_MASK) | (1<<digit);
-  DISPLAY_SEG_PORT = segs;
-  // decimal point if necessary
-  if (digit == dp) {
-    DISPLAY_SEG_PORT |= DISPLAY_SEG_DP;
-  }
-  return;
-}
-
-void Display::newRefresh(void) {
-  // increment or overflow
-  digit = (digit>=DISPLAY_NUM_DIGITS-1) ? 0 : digit+1;
   // digit 0 is the LSD, digit 3 is the MSD
-  DISPLAY_DIG_PORT = (DISPLAY_DIG_PORT & ~DISPLAY_DIG_MASK) | (1<<digit);
+  DISPLAY_DIG_PORT = (DISPLAY_DIG_PORT & ~DISPLAY_DIG_MASK) | (1<<(DISPLAY_NUM_DIGITS-digit-1));
   // write the digits to the PORT
-  DISPLAY_SEG_PORT = font[digDisp[digit]];
+  DISPLAY_SEG_PORT = digDisp[digit];
   // done
   return;
 }

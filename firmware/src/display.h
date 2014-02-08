@@ -24,16 +24,16 @@ public:
   // constructor
   Display(void);
   // set display
-  void set(float num);
+  //void set(float num);
   // set display error
-  void setErr(uint8_t err);
+  //void setErr(uint8_t err);
   // set the display given a string
   void set(char *s, uint8_t strLen);
   // refresh display
   void refresh(void);
   // new refresh function
   // based on font file with characters saved as 0b0GFEDCBA
-  void newRefresh(void);
+  //void newRefresh(void);
   // initialize display
   void init(void);
 
@@ -47,7 +47,7 @@ private:
   // current display for the digits
   uint8_t digDisp[DISPLAY_NUM_DIGITS];
   // decimal point
-  uint8_t dp;
+  //uint8_t dp;
 };
 
 #endif

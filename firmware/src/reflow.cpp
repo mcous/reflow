@@ -61,8 +61,14 @@ int main(void) {
   Celsius target;
   setTemp.set(200);
 
+  // text buffer for temperature display
+  char d[7];
+  uint8_t dLen = temp.toString(d);
+  char s[7];
+  uint8_t sLen = setTemp.toString(s);
+
   // perform temperature readings about every 30 ms
-  // ensure timer0 settings are cleared out
+  // ensure timer1 settings are cleared out
   TCCR1A = 0;
   // set prescaler to 1024
   TCCR1B = ( (1 << CS11) | (1 << CS10) );
@@ -84,9 +90,10 @@ int main(void) {
     if (tempCheck) {
       tempCheck = false;
       temp = readThermo();
+      dLen = temp.toString(d);
     }
     // check for open thermocouple
-    if (temp > 1600) {
+    if (temp > 500) {
       mode = MODE_ERR;
     }
 
@@ -103,13 +110,14 @@ int main(void) {
 
     // set the display
     if (mode == MODE_ON || mode == MODE_OFF) {
-      disp.set(temp.getScaled()/4.0);
+      disp.set(d, dLen);
     }
     else if (mode == MODE_SET) {
-      disp.set(setTemp.getScaled()/4.0);
+      disp.set(s, sLen);
     }
     else if (mode == MODE_ERR) {
-      disp.setErr(ERROR_THERMO_OPEN);
+      char e[5] = {'e', 'r', 'r', '0', '\0'};
+      disp.set(e, 4);
     }
 
     // handle buttons
@@ -140,12 +148,13 @@ int main(void) {
 
     // handle encoder input
     int8_t enc = e.getChange();
-    if (mode == MODE_SET) {
+    if (enc && mode == MODE_SET) {
       setTemp.setScaled(setTemp.getScaled() + 2*enc, TEMP_POWER);
       // underflow protection
       if (setTemp < 0) {
         setTemp.set(0);
       }
+      sLen = setTemp.toString(s);
     }
 
     // refresh the display
