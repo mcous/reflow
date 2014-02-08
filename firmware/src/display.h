@@ -10,6 +10,7 @@
 
 // class includes
 #include <avr/io.h>
+#include <avr/pgmspace.h>
 #include "pindefs.h"
 
 // defines
@@ -26,14 +27,21 @@ public:
   void set(float num);
   // set display error
   void setErr(uint8_t err);
+  // set the display given a string
+  void set(char *s, uint8_t strLen);
   // refresh display
   void refresh(void);
+  // new refresh function
+  // based on font file with characters saved as 0b0GFEDCBA
+  void newRefresh(void);
   // initialize display
   void init(void);
 
 private:
   // font set
-  uint8_t font[12];
+  const static uint8_t font[37] PROGMEM;
+  // retriece character from the font set
+  uint8_t getChar(char c);
   // current digit
   uint8_t digit;
   // current display for the digits

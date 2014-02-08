@@ -36,10 +36,11 @@ SRC = $(PRJ).cpp display.cpp buttons.cpp encoder.cpp celsius.cpp
 # e.g. INC = ../../EyeToSee ../../YouSART
 INC = 
 # any defines to send the compiler
-DEF = 
+DEF = F_CPU=$(CLK)
 # directories
 OBJDIR = ../bin/obj
 EXEDIR = ../bin/exe
+MAPDIR = ../bin/map
 
 #################################################################################################
 # \/ stuff nobody needs to worry about until such time that worrying about it is appropriate \/ #
@@ -50,9 +51,11 @@ INCLUDES := $(addprefix -I,$(INC))
 # defines
 DEFINES  := $(addprefix -D,$(DEF))
 # c flags
-CFLAGS    = -Wall -Os -DF_CPU=$(CLK) $(DEFINES) -mmcu=$(MCU) $(INCLUDES)
+CFLAGS    = -Wall -Os -funsigned-char $(DEFINES) -mmcu=$(MCU) $(INCLUDES)
 # any aditional flags for c++
 CPPFLAGS  = -fno-exceptions
+# linker flags
+LDFLAGS   = -Wl,-Map=$(MAPDIR)/$(PRJ).map,--cref
 
 # executables
 AVRDUDE = avrdude -c $(PRG) -p $(MCU)
@@ -91,21 +94,26 @@ disasm: $(EXEDIR)/$(PRJ).elf
 clean:
 	rm -f $(EXEDIR)/$(PRJ).elf $(OBJ)
 
-# elf file
+# link the objects into an elf
 $(EXEDIR)/$(PRJ).elf: $(OBJDEPS)
-	$(CC) $(CFLAGS) -o $(EXEDIR)/$(PRJ).elf $(OBJ)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $(EXEDIR)/$(PRJ).elf $(OBJ)
 
-# hex file
+# create a hex from the elf
 $(EXEDIR)/$(PRJ).hex: $(EXEDIR)/$(PRJ).elf
 	rm -f $(EXEDIR)/$(PRJ).hex
 	$(OBJCOPY) -j .text -j .data -O ihex $(EXEDIR)/$(PRJ).elf $(EXEDIR)/$(PRJ).hex
 	$(SIZE) $(EXEDIR)/$(PRJ).elf
 
-$(OBJDEPS): | $(OBJDIR)
+$(OBJDEPS): | $(OBJDIR) $(EXEDIR) $(MAPDIR)
 
 $(OBJDIR):
 	mkdir -p $(OBJDIR)
+
+$(EXEDIR):
 	mkdir -p $(EXEDIR)
+
+$(MAPDIR):
+	mkdir -p $(MAPDIR)
 
 # pattern matching for object files
 # objects from c files
