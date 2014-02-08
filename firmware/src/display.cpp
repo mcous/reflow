@@ -87,11 +87,9 @@ void Display::set(float num) {
 
 // set display error
 void Display::setErr(uint8_t err) {
-  dp = DISPLAY_SEG_OFF;
-  digDisp[0] = 10;
-  digDisp[1] = 11;
-  digDisp[2] = 11;
-  digDisp[3] = err;
+  err += '0';
+  char e[4] = {'e', 'r', 'r', (char)err};
+  set(e, 4);
 }
 
 void Display::set(char *s, uint8_t strLen) {
@@ -157,9 +155,40 @@ void Display::set(char *s, uint8_t strLen) {
 void Display::refresh(void) {
   // increment or overflow
   digit = (digit>=DISPLAY_NUM_DIGITS-1) ? 0 : digit+1;
+  // rearrange
+  uint8_t d = getChar('0'+digDisp[digit]);
+  uint8_t segs = 0;
+  if (d & 0x1) {
+    segs |= DISPLAY_SEG_A;
+  }
+  // segment B
+  if (d & 0x2) {
+    segs |= DISPLAY_SEG_B;
+  }
+  // segment C
+  if (d & 0x4) {
+    segs |= DISPLAY_SEG_C;
+  }
+  // segment D
+  if (d & 0x8) {
+    segs |= DISPLAY_SEG_D;
+  }
+  // segment E
+  if (d & 0x10) {
+    segs |= DISPLAY_SEG_E;
+  }
+  // segment F
+  if (d & 0x20) {
+    segs |= DISPLAY_SEG_F;
+  }
+  // segment G
+  if (d & 0x40) {
+    segs |= DISPLAY_SEG_G;
+  }
+  digDisp[digit] = segs;
   // enable the digit
   DISPLAY_DIG_PORT = (DISPLAY_DIG_PORT & ~DISPLAY_DIG_MASK) | (1<<digit);
-  DISPLAY_SEG_PORT = font[digDisp[digit]];
+  DISPLAY_SEG_PORT = segs;
   // decimal point if necessary
   if (digit == dp) {
     DISPLAY_SEG_PORT |= DISPLAY_SEG_DP;

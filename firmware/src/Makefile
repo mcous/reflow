@@ -22,7 +22,7 @@ MCU = atmega328p
 CLK = 8000000
 # avr programmer (and port if necessary)
 #PRG = avrispv2 -P usb -b 115200 -vvv
-PRG = avrisp -P /dev/tty.usbmodem411 -b 19200
+PRG = avrisp -P /dev/tty.usbmodem3a21 -b 19200
 # fuse bit values for v0.1 pcb
 # use internal 8 MHz RC oscillator with no clock division and slowest available startup
 # enable SPI programming
@@ -105,11 +105,15 @@ $(EXEDIR)/$(PRJ).hex: $(EXEDIR)/$(PRJ).elf
 	$(OBJCOPY) -j .text -j .data -O ihex $(EXEDIR)/$(PRJ).elf $(EXEDIR)/$(PRJ).hex
 	$(SIZE) $(EXEDIR)/$(PRJ).elf
 
-$(OBJDEPS): | $(OBJDIR)
+$(OBJDEPS): | $(OBJDIR) $(EXEDIR) $(MAPDIR)
 
 $(OBJDIR):
 	mkdir -p $(OBJDIR)
+
+$(EXEDIR):
 	mkdir -p $(EXEDIR)
+
+$(MAPDIR):
 	mkdir -p $(MAPDIR)
 
 # pattern matching for object files
