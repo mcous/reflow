@@ -11,74 +11,59 @@
 // contructor - gives private variables default values
 Buttons::Buttons(void) {
   // switch states
+  lastState = BUTTON_MASK;
   state = BUTTON_MASK;
   pressState = BUTTON_MASK;
-  holdState = BUTTON_MASK;
   // switch timer counter
   timerCount = 0;
   // switch event flags
   release = false;
   press = false;
-  hold = false;
-}
-
-// handle button pin change
-void Buttons::handleChange(void) {
-  // disable the timer and switch interrupts and reset the switch timer counter
-  disableTimer();
-  disableInt();
-  timerCount = 0;
-  // save the state that triggered the interrupt
-  state = getState();
-  // start the switch timer to debounce and time if necessary
-  enableTimer();
 }
 
 // handle debouncing the pins and sensing presses vs holds
 void Buttons::handleTimer(void) {
   // disable the timer
   disableTimer();
-  // increment the counter
-  timerCount++;
-  // clear the release flag
-  release = false;
-
-  // check the values still match (i.e. if true, it wasn't a bounce)
-  if (getState() == state) {
-    // if one or both switches are down (if both switches are up, both will read high)
-    if ( state != BUTTON_MASK) {
-      // check for a press
-      if (timerCount == 1) {
-        press = true;
-        pressState = state;
-      }
-      // check for a hold
-      else if (timerCount >= BUTTON_HOLD_COUNT) {
-        press = false;
-        hold = true;
-        holdState = state;
-        timerCount = 1;
-      }
-      // re-enable the timer
-      enableTimer();
-    }
-    // else switches were released
-    else {
+  // save the old state and read in the new one
+  lastState = state;
+  state = getState();
+  // compare and increment count if they match
+  if( state == lastState ) {
+    timerCount++;
+  }
+  else {
+    timerCount = 0;
+  }
+  // after 3 matches, consider switch debounced
+  if (timerCount >= BUTTON_DEBOUNCE_COUNT) {
+    // if all switches are up, it's a release
+    if ( state == BUTTON_MASK ) {
       release = true;
+      timerCount = 0;
+    }
+    else {
+      // else it's not a release
+      release = false;
+      press = true;
+      pressState = state;
+      // after INPUT_HOLD_COUNT, start faking releases
+      //if (timerCount > INPUT_HOLD_COUNT) {
+      //  release = true;
+      //  timerCount = INPUT_REPEAT_COUNT;
+      //}
     }
   }
-
-  // re-enable the pin change interrupt
-  enableInt();
+  // re-enable the timer
+  enableTimer();
 }
 
 
 // initialization
 void Buttons::init(void) {
   initPins();
-  initInt();
   initTimer();
-  enableInt();
+  enableTimer();
 }
 
 // get switch state
@@ -89,15 +74,6 @@ uint8_t Buttons::getState(void) {
 // get the flag states and clear as necessary
 // set uint8_t at pointer to switch state if flag is true
 // outputted switch state is bit flipped for convenience in the app
-bool Buttons::getHold(uint8_t *s) {
-  if (hold) {
-    hold = false;
-    *s = BUTTON_MASK & ~holdState;
-    return true;
-  }
-  return false;
-}
-
 bool Buttons::getPress(uint8_t *s) {
   if (press && release) {
     press = false;
@@ -116,12 +92,6 @@ void Buttons::initPins(void) {
   BUTTON_PORT |= BUTTON_MASK;
 }
 
-// init pin change interrupts
-void Buttons::initInt(void) {
-  // set up pin change interrupt on the pins
-  BUTTON_PCMSK |= BUTTON_MASK;
-}
-
 // init timer for debouncing
 // using an 8-bit timer on an 8MHz clock
 // PS=1024 means an overflow will occur after about 32 ms
@@ -132,20 +102,9 @@ void Buttons::initTimer(void) {
   TCCR2B = ( (1 << CS22) | (1<<CS21) | (1 << CS20) );
 }
 
-// interrupt helpers
-void Buttons::enableInt(void) {
-  // enable the pin change interrupt
-  PCICR |= BUTTON_PCIE;
-}
-
-void Buttons::disableInt(void) {
-  // disable the pin change interrupt
-  PCICR &= ~BUTTON_PCIE;
-}
-
 void Buttons::enableTimer(void) {
-  // reload timer
-  TCNT2 = 0;
+  // reload timer to 156 to get overflow to occur closer to every 12 ms
+  TCNT2 = 156;
   // enable the overflow interrupt
   TIMSK2 = (1 << TOIE2);
 }

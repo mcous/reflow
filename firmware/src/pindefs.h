@@ -36,10 +36,8 @@
 #define BUTTON_START  (1<<2)
 #define BUTTON_STOP   (1<<3)
 #define BUTTON_MASK   ( BUTTON_STOP | BUTTON_START | BUTTON_SET )
-// pushbutton pin change stuff
-#define BUTTON_PCIE        (1<<PCIE2)
-#define BUTTON_PCMSK       PCMSK2
-#define BUTTON_PCINT_vect  PCINT2_vect
+// pushbutton polling / debounce timer
+#define BUTTON_TIMER_OVF_vect  TIMER2_OVF_vect
 
 // encoder port
 #define ENCODER_PORT   PORTC
