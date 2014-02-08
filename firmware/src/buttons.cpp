@@ -11,6 +11,7 @@
 // contructor - gives private variables default values
 Buttons::Buttons(void) {
   // switch states
+  lastState = BUTTON_MASK;
   state = BUTTON_MASK;
   pressState = BUTTON_MASK;
   // switch timer counter
@@ -45,7 +46,7 @@ void Buttons::handleTimer(void) {
       // else it's not a release
       release = false;
       press = true;
-      pressState = state & 0x0F;
+      pressState = state;
       // after INPUT_HOLD_COUNT, start faking releases
       //if (timerCount > INPUT_HOLD_COUNT) {
       //  release = true;
