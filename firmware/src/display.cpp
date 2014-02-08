@@ -94,6 +94,66 @@ void Display::setErr(uint8_t err) {
   digDisp[3] = err;
 }
 
+void Display::set(char *s, uint8_t strLen) {
+  // segments holder
+  uint8_t segs;
+  // string index counter
+  uint8_t i=0;
+  // digit display counter
+  uint8_t j=DISPLAY_NUM_DIGITS;
+  // loop through the string
+  do {
+    if (s[i] != '.') {
+      uint8_t d = getChar(i);
+      segs = 0;
+      // convert 0b0GFDECBA to pins
+      // sorry, just went with an unrolled loop because life is hell
+      // also the hardware is changing so this code won't live long
+      // segment A
+      if (d & 0x1) {
+        segs |= DISPLAY_SEG_A;
+      }
+      // segment B
+      if (d & 0x2) {
+        segs |= DISPLAY_SEG_B;
+      }
+      // segment C
+      if (d & 0x4) {
+        segs |= DISPLAY_SEG_C;
+      }
+      // segment D
+      if (d & 0x8) {
+        segs |= DISPLAY_SEG_D;
+      }
+      // segment E
+      if (d & 0x10) {
+        segs |= DISPLAY_SEG_E;
+      }
+      // segment F
+      if (d & 0x20) {
+        segs |= DISPLAY_SEG_F;
+      }
+      // segment G
+      if (d & 0x40) {
+        segs |= DISPLAY_SEG_G;
+      }
+      digDisp[j-1] = segs;
+      j--;
+    }
+    else {
+      digDisp[j-1] |= DISPLAY_SEG_DP;
+    }
+    i++;
+  } while (j > 0 && i < strLen);
+
+  // blank the rest
+  while (j > 0) {
+    digDisp[j-1] = 0;
+  }
+  // right justify
+  // implement later
+}
+
 void Display::refresh(void) {
   // increment or overflow
   digit = (digit>=DISPLAY_NUM_DIGITS-1) ? 0 : digit+1;
@@ -104,7 +164,17 @@ void Display::refresh(void) {
   if (digit == dp) {
     DISPLAY_SEG_PORT |= DISPLAY_SEG_DP;
   }
+  return;
+}
 
+void Display::newRefresh(void) {
+  // increment or overflow
+  digit = (digit>=DISPLAY_NUM_DIGITS-1) ? 0 : digit+1;
+  // digit 0 is the LSD, digit 3 is the MSD
+  DISPLAY_DIG_PORT = (DISPLAY_DIG_PORT & ~DISPLAY_DIG_MASK) | (1<<digit);
+  // write the digits to the PORT
+  DISPLAY_SEG_PORT = font[digDisp[digit]];
+  // done
   return;
 }
 
@@ -134,6 +204,10 @@ uint8_t Display::getChar(char c) {
   else if (c >= 'a' && c <= 'z') {
     c -= ('a'-10);
   }
+  // dash
+  else if (c == '-') {
+    c = 36;
+  }
   // anything else
   else {
     // return a space
@@ -144,78 +218,80 @@ uint8_t Display::getChar(char c) {
 }
 
 // character representations
-// array contains 0-9, A-Z
+// array contains '0'-'9', 'A'-'Z', '-'
 const uint8_t Display::font[] PROGMEM = {
-  // 0
-  (DISPLAY_SEG_A | DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_F),
-  // 1
-  (DISPLAY_SEG_B | DISPLAY_SEG_C),
-  // 2
-  (DISPLAY_SEG_A | DISPLAY_SEG_B | DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_G),
-  // 3
-  (DISPLAY_SEG_A | DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_G),
-  // 4
-  (DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_F | DISPLAY_SEG_G),
-  // 5
-  (DISPLAY_SEG_A | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_F | DISPLAY_SEG_G),
-  // 6
-  (DISPLAY_SEG_A | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_F | DISPLAY_SEG_G),
-  // 7
-  (DISPLAY_SEG_A | DISPLAY_SEG_B | DISPLAY_SEG_C),
-  // 8
-  (DISPLAY_SEG_A | DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_F | DISPLAY_SEG_G),
-  // 9
-  (DISPLAY_SEG_A | DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_F | DISPLAY_SEG_G),
-  // A
-  (DISPLAY_SEG_A | DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_E | DISPLAY_SEG_F | DISPLAY_SEG_G),
-  // B
-  (DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_F | DISPLAY_SEG_G),
-  // C
-  (DISPLAY_SEG_A | DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_F),
-  // D
-  (DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_G),
-  // E
-  (DISPLAY_SEG_A | DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_F | DISPLAY_SEG_G),
-  // F
-  (DISPLAY_SEG_A | DISPLAY_SEG_E | DISPLAY_SEG_F | DISPLAY_SEG_G),
-  // G
-  (DISPLAY_SEG_A | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_F),
-  // H
-  (DISPLAY_SEG_C | DISPLAY_SEG_E | DISPLAY_SEG_F | DISPLAY_SEG_G),
-  // I
-  (DISPLAY_SEG_E | DISPLAY_SEG_F),
-  // J
-  (DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_E),
-  // K
-  (DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_F | DISPLAY_SEG_G),
-  // L
-  (DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_F),
-  // M
-  (DISPLAY_SEG_A | DISPLAY_SEG_C | DISPLAY_SEG_E),
-  // N
-  (DISPLAY_SEG_A | DISPLAY_SEG_C | DISPLAY_SEG_E),
-  // O
-  (DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_G),
-  // P
-  (DISPLAY_SEG_A | DISPLAY_SEG_B | DISPLAY_SEG_E | DISPLAY_SEG_F | DISPLAY_SEG_G),
-  // Q
-  (DISPLAY_SEG_A | DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_F | DISPLAY_SEG_G),
-  // R
-  (DISPLAY_SEG_E | DISPLAY_SEG_G),
-  // S
-  (DISPLAY_SEG_A | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_F | DISPLAY_SEG_G),
-  // T
-  (DISPLAY_SEG_A | DISPLAY_SEG_E | DISPLAY_SEG_F),
-  // U
-  (DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_E),
-  // V
-  (DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_F),
-  // W
-  (DISPLAY_SEG_B | DISPLAY_SEG_D | DISPLAY_SEG_F),
-  // X
-  (DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_E | DISPLAY_SEG_F | DISPLAY_SEG_G),
-  // Y
-  (DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_F | DISPLAY_SEG_G),
-  // Z
-  (DISPLAY_SEG_A | DISPLAY_SEG_D | DISPLAY_SEG_G)
+  // 0 - DISPLAY_SEG_A | DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_F
+  0x3F,
+  // 1 - DISPLAY_SEG_B | DISPLAY_SEG_C
+  0x06,
+  // 2 - DISPLAY_SEG_A | DISPLAY_SEG_B | DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_G
+  0x5B,
+  // 3 - DISPLAY_SEG_A | DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_G
+  0x4F,
+  // 4 - DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_F | DISPLAY_SEG_G
+  0x66,
+  // 5 - DISPLAY_SEG_A | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_F | DISPLAY_SEG_G
+  0x6D,
+  // 6 - DISPLAY_SEG_A | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_F | DISPLAY_SEG_G
+  0x7D,
+  // 7 - DISPLAY_SEG_A | DISPLAY_SEG_B | DISPLAY_SEG_C
+  0x07,
+  // 8 - DISPLAY_SEG_A | DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_F | DISPLAY_SEG_G
+  0x7F,
+  // 9 - DISPLAY_SEG_A | DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_F | DISPLAY_SEG_G
+  0x6F,
+  // A - DISPLAY_SEG_A | DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_E | DISPLAY_SEG_F | DISPLAY_SEG_G
+  0x77,
+  // B - DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_F | DISPLAY_SEG_G
+  0x7C,
+  // C - DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_G
+  0x58,
+  // D - DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_G
+  0x5E,
+  // E - DISPLAY_SEG_A | DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_F | DISPLAY_SEG_G
+  0x79,
+  // F - DISPLAY_SEG_A | DISPLAY_SEG_E | DISPLAY_SEG_F | DISPLAY_SEG_G
+  0x71,
+  // G - DISPLAY_SEG_A | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_F
+  0x3D,
+  // H - DISPLAY_SEG_C | DISPLAY_SEG_E | DISPLAY_SEG_F | DISPLAY_SEG_G
+  0x74,
+  // I - DISPLAY_SEG_E | DISPLAY_SEG_F
+  0x30,
+  // J - DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_E
+  0x1E,
+  // K - DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_E | DISPLAY_SEG_F | DISPLAY_SEG_G
+  0x76,
+  // L - DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_F
+  0x38,
+  // M - DISPLAY_SEG_A | DISPLAY_SEG_C | DISPLAY_SEG_E
+  0x15,
+  // N - DISPLAY_SEG_C | DISPLAY_SEG_E | DISPLAY_SEG_G
+  0x54,
+  // O - DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_G
+  0x5C,
+  // P - DISPLAY_SEG_A | DISPLAY_SEG_B | DISPLAY_SEG_E | DISPLAY_SEG_F | DISPLAY_SEG_G
+  0x73,
+  // Q - DISPLAY_SEG_A | DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_F | DISPLAY_SEG_G
+  0x67,
+  // R - DISPLAY_SEG_E | DISPLAY_SEG_G
+  0x50,
+  // S - DISPLAY_SEG_A | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_F | DISPLAY_SEG_G
+  0x6D,
+  // T - DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_F | DISPLAY_SEG_G
+  0x78,
+  // U - DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_F
+  0x3E,
+  // V - DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_E
+  0x1C,
+  // W - DISPLAY_SEG_B | DISPLAY_SEG_D | DISPLAY_SEG_F
+  0x2A,
+  // X - DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_E | DISPLAY_SEG_F | DISPLAY_SEG_G
+  0x76,
+  // Y - DISPLAY_SEG_B | DISPLAY_SEG_C | DISPLAY_SEG_D | DISPLAY_SEG_F | DISPLAY_SEG_G
+  0x6E,
+  // Z - DISPLAY_SEG_A | DISPLAY_SEG_B | DISPLAY_SEG_D | DISPLAY_SEG_E | DISPLAY_SEG_G
+  0x5B,
+  // dash - DISPLAY_SEG_G
+  0x40
 };
