@@ -93,7 +93,7 @@ int main(void) {
       dLen = temp.toString(d);
     }
     // check for open thermocouple
-    if (temp > 500) {
+    if (temp > 400) {
       mode = MODE_ERR;
     }
 
