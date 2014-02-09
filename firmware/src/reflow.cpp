@@ -198,7 +198,7 @@ void initThermo(void) {
 // 4x C is chosen because it allows us to put the temp with 0.25 deg precision in a 16-bit int
 Celsius readThermo(void) {
   Celsius ret;
-  int16_t c;
+  uint16_t c;
   ATOMIC_BLOCK(ATOMIC_FORCEON) {
     c = adcRead;
   }
