@@ -22,8 +22,8 @@
 // error codes
 #define ERROR_THERMO_OPEN 0
 
-// voltage reference as measured externally
-#define VREF  4.93
+// voltage reference (probably not this exactly but it's good enough)
+#define VREF  5
 
 // global objects
 // button and rotary encoder input

@@ -69,13 +69,14 @@ void Display::set(char *s, uint8_t strLen) {
     i++;
   } while (j > 0 && i < strLen);
 
-  // blank the rest
-  while (j > 0) {
-    digDisp[j-1] = 0;
-    j--;
+  // right justify and blank
+  for (uint8_t n=j, n<DISPLAY_NUM_DIGITS, n++) {
+    digDisp[n-j] = digDisp[n];
+    digDisp[n] = 0;
   }
-  // right justify
-  // implement later
+  
+  // done
+  return;
 }
 
 void Display::refresh(void) {
