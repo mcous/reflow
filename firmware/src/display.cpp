@@ -70,9 +70,11 @@ void Display::set(char *s, uint8_t strLen) {
   } while (j > 0 && i < strLen);
 
   // right justify and blank
-  for (uint8_t n=j, n<DISPLAY_NUM_DIGITS, n++) {
-    digDisp[n-j] = digDisp[n];
-    digDisp[n] = 0;
+  if (j > 0) {
+    for (uint8_t n=j; n<DISPLAY_NUM_DIGITS; n++) {
+      digDisp[n-j] = digDisp[n];
+      digDisp[n] = 0;
+    }
   }
   
   // done
