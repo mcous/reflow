@@ -87,7 +87,7 @@ void Display::refresh(void) {
   DISPLAY_SEG_PORT = digDisp[digit];
   // re-enable the display
   // digit 0 is the LSD, digit 3 is the MSD
-  DISPLAY_DIG_PORT = (DISPLAY_DIG_PORT & ~DISPLAY_DIG_MASK) | (1<<(DISPLAY_NUM_DIGITS-digit-1));
+  DISPLAY_DIG_PORT |= (1<<(DISPLAY_NUM_DIGITS-digit-1));
   // done
   return;
 }
