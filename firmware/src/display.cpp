@@ -79,12 +79,15 @@ void Display::set(char *s, uint8_t strLen) {
 }
 
 void Display::refresh(void) {
+  // turn off the display
+  DISPLAY_DIG_PORT &= ~DISPLAY_DIG_MASK;
   // increment or overflow
   digit = (digit>=DISPLAY_NUM_DIGITS-1) ? 0 : digit+1;
+  // write the segments to the PORT
+  DISPLAY_SEG_PORT = digDisp[digit];
+  // re-enable the display
   // digit 0 is the LSD, digit 3 is the MSD
   DISPLAY_DIG_PORT = (DISPLAY_DIG_PORT & ~DISPLAY_DIG_MASK) | (1<<(DISPLAY_NUM_DIGITS-digit-1));
-  // write the digits to the PORT
-  DISPLAY_SEG_PORT = digDisp[digit];
   // done
   return;
 }
