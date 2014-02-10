@@ -69,6 +69,6 @@ void initThermo(void);
 
 // read the thermocouple
 // returns the temperature in a Celsius object
-Celsius readThermo(void);
+//Celsius readThermo(void);
 
 #endif

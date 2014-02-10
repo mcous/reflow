@@ -7,6 +7,7 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <avr/sleep.h>
 #include <util/atomic.h>
 #include <util/delay.h>
 
@@ -18,24 +19,16 @@
 
 // ISR for ADC readings
 ISR(ADC_vect) {
+  // disable sleep
+  SMCR = 0;
   // read the ADC reading into the buffer
-  adcRead = ADCL | (ADCH << 8);
+  adcRead = (ADCH << 8) | (ADCL);
 }
-
-// ISR for temperature readings
-// ISR(TIMER1_OVF_vect) {
-//   tempCheck = true;
-// }
 
 // ISR for rotary encoder
 ISR(ENCODER_PCINT_vect) {
   e.handleChange();
 }
-
-// switch debouncer / timer
-// ISR(BUTTON_TIMER_OVF_vect, ISR_NOBLOCK) {
-//   b.handleTimer();
-// }
 
 // applicaiton event timer
 ISR(REFLOW_EVENT_vect) {
@@ -143,7 +136,13 @@ int main(void) {
     // thermometer reading
     if (eventFlags & REFLOW_THERMO_FLAG) {
       // measure that shit yo
-      temp = readThermo();
+      // put CPU to sleep to reduce noise and start conversion
+      SMCR = (1<<SM0) | (1<<SE);
+      sleep_cpu();
+      // convert to 4x degrees C
+      uint16_t c = adcRead * 25 * VREF;
+      c >>= 5;
+      temp.setScaled(c, TEMP_POWER);
       dLen = temp.toString(d);
       // clear the flag
       eventFlags &= ~REFLOW_THERMO_FLAG;
@@ -267,25 +266,27 @@ void initThermo(void) {
   uint16_t read = ADCL | (ADCH << 8);
   (void) read;
   // put ADC into free-running mode, enable the interrupt, and slow things down
-  ADCSRA |= ( (1<<ADSC) | (1<<ADATE) | (1<<ADIE) | (1<<ADPS2));
+  //ADCSRA |= ( (1<<ADSC) | (1<<ADATE) | (1<<ADIE) | (1<<ADPS2));
+  // single shot mode with interrupts enabled
+  ADCSRA |= (1<<ADIE);
 }
 
 // convert the ADC value from the thermocouple to 4x the temperature in C
 // 4x C is chosen because it allows us to put the temp with 0.25 deg precision in a 16-bit int
-Celsius readThermo(void) {
-  Celsius ret;
-  uint16_t c;
-  ATOMIC_BLOCK(ATOMIC_FORCEON) {
-    c = adcRead;
-  }
-  // hey look, math
-  //   C = (ADCread * VREF V)/1024 * (1 deg C)/(5 mV)
-  //   C = (ADCread * VREF V)/1024 * (200 deg C)/(1 V)
-  //   C = (ADCread * VREF * 25 deg C)/128
-  //  4C = (ADCread * VREF * 25 deg C)/32
-  c = c * VREF * 25;
-  c >>= 5;
-  ret.setScaled(c, TEMP_POWER);
-  return ret;
-}
+// Celsius readThermo(void) {
+//   Celsius ret;
+//   uint16_t c;
+//   ATOMIC_BLOCK(ATOMIC_FORCEON) {
+//     c = adcRead;
+//   }
+//   // hey look, math
+//   //   C = (ADCread * VREF V)/1024 * (1 deg C)/(5 mV)
+//   //   C = (ADCread * VREF V)/1024 * (200 deg C)/(1 V)
+//   //   C = (ADCread * VREF * 25 deg C)/128
+//   //  4C = (ADCread * VREF * 25 deg C)/32
+//   c = c * VREF * 25;
+//   c >>= 5;
+//   ret.setScaled(c, TEMP_POWER);
+//   return ret;
+// }
 
