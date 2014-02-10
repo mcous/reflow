@@ -13,6 +13,9 @@
 #include "reflow.h"
 #include "display.h"
 
+// macro for event checking
+#define event(T, M) ((T & M) == M)
+
 // ISR for ADC readings
 ISR(ADC_vect) {
   // read the ADC reading into the buffer
@@ -20,9 +23,9 @@ ISR(ADC_vect) {
 }
 
 // ISR for temperature readings
-ISR(TIMER1_OVF_vect) {
-  tempCheck = true;
-}
+// ISR(TIMER1_OVF_vect) {
+//   tempCheck = true;
+// }
 
 // ISR for rotary encoder
 ISR(ENCODER_PCINT_vect) {
@@ -30,8 +33,32 @@ ISR(ENCODER_PCINT_vect) {
 }
 
 // switch debouncer / timer
-ISR(BUTTON_TIMER_OVF_vect, ISR_NOBLOCK) {
-  b.handleTimer();
+// ISR(BUTTON_TIMER_OVF_vect, ISR_NOBLOCK) {
+//   b.handleTimer();
+// }
+
+// applicaiton event timer
+ISR(REFLOW_EVENT_vect) {
+  // set the flags
+  // display refresh
+  if (event(eventTimer, REFLOW_DISPLAY_EVENT)) {
+    eventFlags |= REFLOW_DISPLAY_FLAG;
+  }
+  // button polling
+  if (event(eventTimer, REFLOW_BUTTON_EVENT)) {
+    eventFlags |= REFLOW_BUTTON_FLAG; 
+  }
+  // encoder reading
+  if (event(eventTimer, REFLOW_ENCODER_EVENT)) {
+    eventFlags |= REFLOW_ENCODER_FLAG;
+  }
+  // temperature reading
+  if (event(eventTimer, REFLOW_THERMO_EVENT)) {
+    eventFlags |= REFLOW_THERMO_FLAG;
+  }
+
+  // increment the counter and overflow if necessary
+  eventTimer = (eventTimer < REFLOW_EVENT_MAX) ? eventTimer+1 : 0; 
 }
 
 // application main method
@@ -42,12 +69,15 @@ int main(void) {
   // ISR volatiles
   // should already be 0 but hey safety first
   adcRead = 0;
-  tempCheck = false;
+  //tempCheck = false;
+  eventTimer = 0;
+  eventFlags = 0;
 
   // get the display ready
   Display disp;
   disp.init();
   // get the buttons and encoder input ready
+  Buttons b;
   b.init();
   e.init();
   // initialize the indicator LEDs
@@ -67,31 +97,65 @@ int main(void) {
   char s[7];
   uint8_t sLen = setTemp.toString(s);
 
-  // perform temperature readings about every 30 ms
-  // ensure timer1 settings are cleared out
-  TCCR1A = 0;
-  // set prescaler to 1024
-  TCCR1B = ( (1 << CS11) | (1 << CS10) );
-  // enable the overflow interrupt
-  TIMSK1 = (1 << TOIE1);
-
-
   // operating mode
   uint8_t mode = MODE_OFF;
   LED_PORT = (LED_PORT & ~LED_MASK) | LED_STOP;
   uint8_t prevMode = mode;
+
+  // enable the event timer
+  enableEventTimer();
 
   // enable global interrupts
   sei();
 
   // sideways eight loop
   for (;;) {
-    // check the temperature if it's time
-    if (tempCheck) {
-      tempCheck = false;
+    // take care of any events
+    // display refresh
+    if (eventFlags & REFLOW_DISPLAY_FLAG) {
+      // refresh that shit yo
+      disp.refresh();
+      // clear the flag
+      eventFlags &= ~REFLOW_DISPLAY_FLAG;
+    }
+    // button polling
+    if (eventFlags & REFLOW_BUTTON_FLAG) {
+      // poll that shit yo
+      b.handleTimer();
+      // clear the flag
+      eventFlags &= ~REFLOW_BUTTON_FLAG;
+    }
+    // encoder reading
+    if (eventFlags & REFLOW_ENCODER_FLAG) {
+      // read that shit yo
+      int8_t enc = e.getChange();
+      if (enc && mode == MODE_SET) {
+        setTemp.setScaled(setTemp.getScaled() + 2*enc, TEMP_POWER);
+        // underflow protection
+        if (setTemp < 0) {
+          setTemp.set(0);
+        }
+        sLen = setTemp.toString(s);
+      }
+      // clear the flag
+      eventFlags &= ~REFLOW_ENCODER_FLAG;
+    }
+    // thermometer reading
+    if (eventFlags & REFLOW_THERMO_FLAG) {
+      // measure that shit yo
       temp = readThermo();
       dLen = temp.toString(d);
+      // clear the flag
+      eventFlags &= ~REFLOW_THERMO_FLAG;
     }
+
+    // check the temperature if it's time
+    // if (tempCheck) {
+    //   tempCheck = false;
+    //   temp = readThermo();
+    //   dLen = temp.toString(d);
+    // }
+
     // check for open thermocouple
     if (temp > 400) {
       mode = MODE_ERR;
@@ -147,22 +211,34 @@ int main(void) {
     }
 
     // handle encoder input
-    int8_t enc = e.getChange();
-    if (enc && mode == MODE_SET) {
-      setTemp.setScaled(setTemp.getScaled() + 2*enc, TEMP_POWER);
-      // underflow protection
-      if (setTemp < 0) {
-        setTemp.set(0);
-      }
-      sLen = setTemp.toString(s);
-    }
+    // int8_t enc = e.getChange();
+    // if (enc && mode == MODE_SET) {
+    //   setTemp.setScaled(setTemp.getScaled() + 2*enc, TEMP_POWER);
+    //   // underflow protection
+    //   if (setTemp < 0) {
+    //     setTemp.set(0);
+    //   }
+    //   sLen = setTemp.toString(s);
+    // }
 
     // refresh the display
-    disp.refresh();
+    // disp.refresh();
   }
 
   // DEEP THOUGHT
   return 42;
+}
+
+// event timer
+void enableEventTimer(void) {
+  // enable timer 1 to fire at 512Hz
+  // CTC mode, no prescaler, OCR1A = 15625
+  TCCR1A = 0;
+  TCCR1B = ( (1<<WGM12) | (1<<CS10) );
+  TCCR1C = 0;
+  OCR1A = 15625;
+  // enable the compare interrupt
+  TIMSK1 = (1<<OCIE1A);
 }
 
 void initLeds(void) {

@@ -24,7 +24,7 @@ Buttons::Buttons(void) {
 // handle debouncing the pins and sensing presses vs holds
 void Buttons::handleTimer(void) {
   // disable the timer
-  disableTimer();
+  //disableTimer();
   // save the old state and read in the new one
   lastState = state;
   state = getState();
@@ -55,15 +55,15 @@ void Buttons::handleTimer(void) {
     }
   }
   // re-enable the timer
-  enableTimer();
+  //enableTimer();
 }
 
 
 // initialization
 void Buttons::init(void) {
   initPins();
-  initTimer();
-  enableTimer();
+  //initTimer();
+  //enableTimer();
 }
 
 // get switch state
