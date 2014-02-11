@@ -7,7 +7,6 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
-//#include <avr/sleep.h>
 #include <util/atomic.h>
 #include <util/delay.h>
 
@@ -56,7 +55,6 @@ int main(void) {
   // ISR volatiles
   // should already be 0 but hey safety first
   adcRead = 0;
-  //tempCheck = false;
   eventTimer = 0;
   eventFlags = 0;
 
@@ -88,7 +86,6 @@ int main(void) {
   // operating mode
   uint8_t mode = MODE_OFF;
   LED_PORT = (LED_PORT & ~LED_MASK) | LED_STOP;
-  //uint8_t prevMode = mode;
 
   // enable the event timer
   enableEventTimer();
@@ -119,7 +116,34 @@ int main(void) {
       int8_t enc = e.getChange();
       if (enc) {
         encoderCount=0;
-        target.setScaled(target.getScaled() + 2*enc, TEMP_POWER);
+        // change target based on encoder speed
+        // slower = less increments
+        if (enc == -1) {
+          target--;
+          target--;
+        }
+        else if (enc == 1) {
+          target++;
+          target++;
+        }
+        else if (enc == -2) {
+          target -= 1;
+        }
+        else if (enc == 2) {
+          target += 1;
+        }
+        else if (enc == -3) {
+          target -= 10;
+        }
+        else if (enc == 3) {
+          target += 10;
+        }
+        else if (enc < 0) {
+          target -= 20;
+        }
+        else {
+          target += 20;
+        }
         // underflow protection
         if (target < 0) {
           target.set(0);
