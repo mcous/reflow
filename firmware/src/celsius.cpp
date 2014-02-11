@@ -151,6 +151,10 @@ uint8_t Celsius::toString(const uint8_t unit, char *t) {
       f-= 10;
       t[i]++;
     }
+
+    // put an F on the end
+    t[++i] = 'F';
+    
     return i+1;
   }
   else {

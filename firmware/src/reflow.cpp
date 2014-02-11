@@ -7,7 +7,7 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <avr/sleep.h>
+//#include <avr/sleep.h>
 #include <util/atomic.h>
 #include <util/delay.h>
 
@@ -18,12 +18,12 @@
 #define event(T, M) ((T & M) == M)
 
 // ISR for ADC readings
-ISR(ADC_vect) {
-  // disable sleep
-  SMCR = 0;
-  // read the ADC reading into the buffer
-  adcRead = (ADCH << 8) | (ADCL);
-}
+// ISR(ADC_vect) {
+//   // disable sleep
+//   SMCR = 0;
+//   // read the ADC reading into the buffer
+//   adcRead = (ADCH << 8) | (ADCL);
+// }
 
 // ISR for rotary encoder
 ISR(ENCODER_PCINT_vect) {
@@ -73,6 +73,7 @@ int main(void) {
   Buttons b;
   b.init();
   e.init();
+  uint8_t encoderCount = MODE_SET_DISPLAY_COUNT;
   // initialize the indicator LEDs
   initLeds();
 
@@ -80,20 +81,20 @@ int main(void) {
   initThermo();
   bool targetHit = false;
   Celsius temp;
-  Celsius setTemp;
   Celsius target;
-  setTemp.set(200);
+  target.set(200);
+  uint8_t tempUnits = TEMP_UNIT_C;
 
   // text buffer for temperature display
   char d[7];
   uint8_t dLen = temp.toString(d);
   char s[7];
-  uint8_t sLen = setTemp.toString(s);
+  uint8_t sLen = target.toString(s);
 
   // operating mode
   uint8_t mode = MODE_OFF;
   LED_PORT = (LED_PORT & ~LED_MASK) | LED_STOP;
-  uint8_t prevMode = mode;
+  //uint8_t prevMode = mode;
 
   // enable the event timer
   enableEventTimer();
@@ -122,13 +123,18 @@ int main(void) {
     if (eventFlags & REFLOW_ENCODER_FLAG) {
       // read that shit yo
       int8_t enc = e.getChange();
-      if (enc && mode == MODE_SET) {
-        setTemp.setScaled(setTemp.getScaled() + 2*enc, TEMP_POWER);
+      if (enc) {
+        encoderCount=0;
+        target.setScaled(target.getScaled() + 2*enc, TEMP_POWER);
         // underflow protection
-        if (setTemp < 0) {
-          setTemp.set(0);
+        if (target < 0) {
+          target.set(0);
         }
-        sLen = setTemp.toString(s);
+        sLen = target.toString(tempUnits, s);
+      }
+      // increment counter
+      if (encoderCount < MODE_SET_DISPLAY_COUNT) {
+        encoderCount++;
       }
       // clear the flag
       eventFlags &= ~REFLOW_ENCODER_FLAG;
@@ -136,51 +142,64 @@ int main(void) {
     // thermometer reading
     if (eventFlags & REFLOW_THERMO_FLAG) {
       // measure that shit yo
-      // put CPU to sleep to reduce noise and start conversion
-      SMCR = (1<<SM0) | (1<<SE);
-      sleep_cpu();
-      // convert to 4x degrees C
-      uint16_t c = adcRead * 25 * VREF;
-      c >>= 5;
-      temp.setScaled(c, TEMP_POWER);
-      dLen = temp.toString(d);
+      // take 4 ADC samples and divide by 2 to oversample to 11-bit precision
+      // then, convert 11-bit number to 4x degrees C
+      // steps combined for efficiency
+      uint32_t c = 0;
+      for (uint8_t i=4; i>0; i--) {
+        // start an ADC conversion
+        ADCSRA |= (1<<ADSC);
+        // wait for conversion to complete
+        while (ADCSRA & (1<<ADSC));
+        c += ( ADCL | (ADCH << 8) );
+      }
+      c *= 25 * VREF;
+      c >>= 7;
+      temp.setScaled((int16_t)(c), TEMP_POWER);
+      dLen = temp.toString(tempUnits, d);
       // clear the flag
       eventFlags &= ~REFLOW_THERMO_FLAG;
     }
 
-    // check the temperature if it's time
-    // if (tempCheck) {
-    //   tempCheck = false;
-    //   temp = readThermo();
-    //   dLen = temp.toString(d);
-    // }
 
     // check for open thermocouple
-    if (temp > 400) {
-      mode = MODE_ERR;
+    if (temp > 500) {
+      // write error flag
+      mode |= MODE_ERR;
     }
-
-    // handle the temperature if we're on
-    if ((mode == MODE_ON) && (!targetHit)) {
-      if (temp < target) {
-        HEAT_PORT |= HEAT_PIN;
+    // else thermo data is good
+    else {
+      // clear error flag
+      mode &= ~MODE_ERR;
+      // check if we're displaying the set temp
+      if (encoderCount < MODE_SET_DISPLAY_COUNT) {
+        mode |= MODE_SET;
       }
       else {
-        targetHit = true;
-        HEAT_PORT &= ~HEAT_PIN;
+        mode &= ~ MODE_SET;
+        if (mode & MODE_ON && (!targetHit)) {
+          if (temp < target) {
+            HEAT_PORT |= HEAT_PIN;
+          }
+          else {
+            targetHit = true;
+            HEAT_PORT &= ~HEAT_PIN;
+          }
+        }
       }
     }
 
     // set the display
-    if (mode == MODE_ON || mode == MODE_OFF) {
-      disp.set(d, dLen);
-    }
-    else if (mode == MODE_SET) {
-      disp.set(s, sLen);
-    }
-    else if (mode == MODE_ERR) {
+    // error is first priority, then set, then value
+    if (mode & MODE_ERR) {
       char e[5] = {'e', 'r', 'r', '0', '\0'};
       disp.set(e, 4);
+    }
+    else if (mode & MODE_SET) {
+      disp.set(s, sLen);
+    }
+    else {
+      disp.set(d, dLen);
     }
 
     // handle buttons
@@ -188,22 +207,16 @@ int main(void) {
     //  button presses
     if (b.getPress(&buttons)) {
       if (buttons == BUTTON_SET) {
-        if (mode == MODE_SET) {
-          target = setTemp;
-          mode = prevMode;
-        }
-        else {
-          prevMode = mode;
-          mode = MODE_SET;
-        }
+        // toggle units
+        tempUnits ^= TEMP_UNIT_F;
       } 
       else if (buttons == BUTTON_START) {
-        mode = MODE_ON;
+        mode |= MODE_ON;
         LED_PORT = (LED_PORT & ~LED_MASK) | LED_START;
         targetHit = false;
       }
       else {
-        mode = MODE_OFF;
+        mode &= ~MODE_ON;
         LED_PORT = (LED_PORT & ~LED_MASK) | LED_STOP;
         HEAT_PORT &= ~HEAT_PIN;
       }
@@ -258,17 +271,17 @@ void initHeat(void) {
 void initThermo(void) {
   // set up ADC on ADC7 with VREF as the reference voltage
   ADMUX = 7;
+  // slow things down to 8 MHz / 64 = 125 kHz
+  ADCSRA |= ( (1<<ADPS2) | (1<<ADPS1) );
   // enable ADC, do a reading, and toss it
   ADCSRA |= ( (1<<ADEN) | (1<<ADSC) );
   // wait for conversion to complete
   while (ADCSRA & (1<<ADSC));
+  // clear the bit (extended conversion)
+  //ADCSRA &= ~(1<<ADSC);
   // read the value;
   uint16_t read = ADCL | (ADCH << 8);
   (void) read;
-  // put ADC into free-running mode, enable the interrupt, and slow things down
-  //ADCSRA |= ( (1<<ADSC) | (1<<ADATE) | (1<<ADIE) | (1<<ADPS2));
-  // single shot mode with interrupts enabled
-  ADCSRA |= (1<<ADIE);
 }
 
 // convert the ADC value from the thermocouple to 4x the temperature in C

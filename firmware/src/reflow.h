@@ -14,10 +14,14 @@
 #include "celsius.h"
 
 // operating modes
-#define MODE_OFF  0
-#define MODE_ON   1
-#define MODE_SET  2
-#define MODE_ERR  255
+#define MODE_OFF     0
+#define MODE_ON      1
+#define MODE_SET     2
+#define MODE_UNIT_F  4  
+#define MODE_ERR     0xF0
+
+// timing for set mode
+#define MODE_SET_DISPLAY_COUNT  6
 
 // application events
 #define REFLOW_EVENT_vect TIMER1_COMPA_vect
