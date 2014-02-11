@@ -12,6 +12,7 @@
 #include <stdint.h>
 
 #define BUTTON_DEBOUNCE_COUNT  3
+#define BUTTON_HOLD_COUNT      50
 
 class Buttons {
 public:
@@ -20,6 +21,8 @@ public:
 
   // get the flag states and clear as necessary
   bool getPress(uint8_t *s);
+  bool getHold(uint8_t *s);
+
   // handle debouncing
   void handleTimer(void);
 
@@ -40,14 +43,15 @@ private:
 
   // ISR volatiles
   // button states
-  volatile uint8_t state;
-  volatile uint8_t lastState;
-  volatile uint8_t pressState;
+  uint8_t state;
+  uint8_t lastState;
+  uint8_t pressState;
   // switch timer counter
-  volatile uint8_t timerCount;
+  uint8_t timerCount;
   // switch event flags
-  volatile bool release;
-  volatile bool press;
+  bool release;
+  bool press;
+  bool hold;
 };
 
 #endif

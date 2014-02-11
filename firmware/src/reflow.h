@@ -12,13 +12,17 @@
 #include "encoder.h"
 
 // operating modes
-#define MODE_OFF     0
-#define MODE_ON      1
-#define MODE_SET     2
-#define MODE_ERR     0xF0
+#define MODE_OFF   0x00
+#define MODE_ON    0x01
+#define MODE_SET   0x02
+#define MODE_HOLD  0x04
+#define MODE_HIT   0x08
+#define MODE_SHOW  0x10
+#define MODE_ERR   0x80
 
 // timing for set mode
-#define MODE_SET_DISPLAY_COUNT  6
+#define MODE_SET_DISPLAY_COUNT  16
+#define MODE_SET_MODE_COUNT     64
 
 // application events
 #define REFLOW_EVENT_vect TIMER1_COMPA_vect

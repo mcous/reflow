@@ -23,8 +23,6 @@ Buttons::Buttons(void) {
 
 // handle debouncing the pins and sensing presses vs holds
 void Buttons::handleTimer(void) {
-  // disable the timer
-  //disableTimer();
   // save the old state and read in the new one
   lastState = state;
   state = getState();
@@ -45,25 +43,27 @@ void Buttons::handleTimer(void) {
     else {
       // else it's not a release
       release = false;
-      press = true;
+      // save the button state
       pressState = state;
-      // after INPUT_HOLD_COUNT, start faking releases
-      //if (timerCount > INPUT_HOLD_COUNT) {
-      //  release = true;
-      //  timerCount = INPUT_REPEAT_COUNT;
-      //}
+      // set flags according to counter
+      if (timerCount < BUTTON_HOLD_COUNT) {
+        press = true;
+      }
+      else if (timerCount == BUTTON_HOLD_COUNT) {
+        press = false;
+        hold = true;
+      }
+      else {
+        timerCount = BUTTON_HOLD_COUNT + 1;
+      }
     }
   }
-  // re-enable the timer
-  //enableTimer();
 }
 
 
 // initialization
 void Buttons::init(void) {
   initPins();
-  //initTimer();
-  //enableTimer();
 }
 
 // get switch state
@@ -78,6 +78,16 @@ bool Buttons::getPress(uint8_t *s) {
   if (press && release) {
     press = false;
     release = false;
+    *s = BUTTON_MASK & ~pressState;
+    return true;
+  }
+  return false;
+}
+
+bool Buttons::getHold(uint8_t *s) {
+  if (hold) {
+    hold = false;
+    //release = false;
     *s = BUTTON_MASK & ~pressState;
     return true;
   }

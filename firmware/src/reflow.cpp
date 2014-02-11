@@ -66,6 +66,7 @@ int main(void) {
   b.init();
   e.init();
   uint8_t encoderCount = MODE_SET_DISPLAY_COUNT;
+  uint8_t buttonCount  = MODE_SET_MODE_COUNT;
   // initialize the indicator LEDs
   initLeds();
 
@@ -84,7 +85,7 @@ int main(void) {
   uint8_t sLen = target.toString(s);
 
   // operating mode
-  uint8_t mode = MODE_OFF;
+  uint8_t mode = MODE_OFF | MODE_HIT;
   LED_PORT = (LED_PORT & ~LED_MASK) | LED_STOP;
 
   // enable the event timer
@@ -107,6 +108,33 @@ int main(void) {
     if (eventFlags & REFLOW_BUTTON_FLAG) {
       // poll that shit yo
       b.handleTimer();
+      // handle buttons
+      uint8_t buttons;
+      //  button presses
+      if (b.getHold(&buttons)) {
+        // if set switch is held, switch units
+        if (buttons == BUTTON_SET) {
+          tempUnits ^= TEMP_UNIT_F;
+        } 
+      }
+      else if (b.getPress(&buttons)) {
+        if (buttons == BUTTON_START) {
+          mode |= MODE_ON;
+          targetHit = false;
+        }
+        else if (buttons == BUTTON_STOP) {
+          mode &= ~MODE_ON;
+          HEAT_PORT &= ~HEAT_PIN;
+        }
+        else if (buttons == BUTTON_SET) {
+          buttonCount = 0;
+          mode ^= (MODE_HIT | MODE_HOLD);
+        }
+      }
+      // increment counter
+      if (buttonCount < MODE_SET_MODE_COUNT) {
+        buttonCount++;
+      }
       // clear the flag
       eventFlags &= ~REFLOW_BUTTON_FLAG;
     }
@@ -179,6 +207,7 @@ int main(void) {
       eventFlags &= ~REFLOW_THERMO_FLAG;
     }
 
+    
 
     // check for open thermocouple
     if (temp > 500) {
@@ -193,21 +222,33 @@ int main(void) {
       if (encoderCount < MODE_SET_DISPLAY_COUNT) {
         mode |= MODE_SET;
       }
+      else if (buttonCount < MODE_SET_MODE_COUNT) {
+        mode |= MODE_SHOW;
+      }
       else {
-        mode &= ~ MODE_SET;
-        if (mode & MODE_ON && (!targetHit)) {
+        mode &= ~(MODE_SET | MODE_SHOW);
+        if (mode & MODE_ON) {
           if (temp < target) {
             HEAT_PORT |= HEAT_PIN;
           }
           else {
-            targetHit = true;
             HEAT_PORT &= ~HEAT_PIN;
+            if (mode & MODE_HIT) {
+              mode &= ~MODE_ON;
+              targetHit = true;
+            }
           }
         }
       }
     }
 
-    // set the display
+    // set the display and status LEDs
+    if (mode & MODE_ON) {
+      LED_PORT = (LED_PORT & ~LED_MASK) | LED_START;
+    }
+    else {
+      LED_PORT = (LED_PORT & ~LED_MASK) | LED_STOP;
+    }
     // error is first priority, then set, then value
     if (mode & MODE_ERR) {
       char e[5] = {'e', 'r', 'r', '0', '\0'};
@@ -216,28 +257,18 @@ int main(void) {
     else if (mode & MODE_SET) {
       disp.set(s, sLen);
     }
-    else {
-      disp.set(d, dLen);
-    }
-
-    // handle buttons
-    uint8_t buttons;
-    //  button presses
-    if (b.getPress(&buttons)) {
-      if (buttons == BUTTON_SET) {
-        // toggle units
-        tempUnits ^= TEMP_UNIT_F;
-      } 
-      else if (buttons == BUTTON_START) {
-        mode |= MODE_ON;
-        LED_PORT = (LED_PORT & ~LED_MASK) | LED_START;
-        targetHit = false;
+    else if (mode & MODE_SHOW) {
+      if (mode & MODE_HIT) {
+        char e[4] = {'h', 'i', 't', '\0'};
+        disp.set(e, 3); 
       }
       else {
-        mode &= ~MODE_ON;
-        LED_PORT = (LED_PORT & ~LED_MASK) | LED_STOP;
-        HEAT_PORT &= ~HEAT_PIN;
+        char e[5] = {'h', 'o', 'l', 'd', '\0'};
+        disp.set(e, 4); 
       }
+    }
+    else {
+      disp.set(d, dLen);
     }
   }
 
