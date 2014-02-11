@@ -13,19 +13,13 @@
 
 #include "reflow.h"
 #include "display.h"
+#include "buttons.h"
+#include "celsius.h"
 
 // macro for event checking
 #define event(T, M) ((T & M) == M)
 
-// ISR for ADC readings
-// ISR(ADC_vect) {
-//   // disable sleep
-//   SMCR = 0;
-//   // read the ADC reading into the buffer
-//   adcRead = (ADCH << 8) | (ADCL);
-// }
-
-// ISR for rotary encoder
+// pin change ISR for rotary encoder
 ISR(ENCODER_PCINT_vect) {
   e.handleChange();
 }
@@ -221,20 +215,6 @@ int main(void) {
         HEAT_PORT &= ~HEAT_PIN;
       }
     }
-
-    // handle encoder input
-    // int8_t enc = e.getChange();
-    // if (enc && mode == MODE_SET) {
-    //   setTemp.setScaled(setTemp.getScaled() + 2*enc, TEMP_POWER);
-    //   // underflow protection
-    //   if (setTemp < 0) {
-    //     setTemp.set(0);
-    //   }
-    //   sLen = setTemp.toString(s);
-    // }
-
-    // refresh the display
-    // disp.refresh();
   }
 
   // DEEP THOUGHT
@@ -272,34 +252,12 @@ void initThermo(void) {
   // set up ADC on ADC7 with VREF as the reference voltage
   ADMUX = 7;
   // slow things down to 8 MHz / 64 = 125 kHz
-  ADCSRA |= ( (1<<ADPS2) | (1<<ADPS1) );
+  ADCSRA = ( (1<<ADPS2) | (1<<ADPS1) );
   // enable ADC, do a reading, and toss it
   ADCSRA |= ( (1<<ADEN) | (1<<ADSC) );
   // wait for conversion to complete
   while (ADCSRA & (1<<ADSC));
-  // clear the bit (extended conversion)
-  //ADCSRA &= ~(1<<ADSC);
   // read the value;
   uint16_t read = ADCL | (ADCH << 8);
   (void) read;
 }
-
-// convert the ADC value from the thermocouple to 4x the temperature in C
-// 4x C is chosen because it allows us to put the temp with 0.25 deg precision in a 16-bit int
-// Celsius readThermo(void) {
-//   Celsius ret;
-//   uint16_t c;
-//   ATOMIC_BLOCK(ATOMIC_FORCEON) {
-//     c = adcRead;
-//   }
-//   // hey look, math
-//   //   C = (ADCread * VREF V)/1024 * (1 deg C)/(5 mV)
-//   //   C = (ADCread * VREF V)/1024 * (200 deg C)/(1 V)
-//   //   C = (ADCread * VREF * 25 deg C)/128
-//   //  4C = (ADCread * VREF * 25 deg C)/32
-//   c = c * VREF * 25;
-//   c >>= 5;
-//   ret.setScaled(c, TEMP_POWER);
-//   return ret;
-// }
-

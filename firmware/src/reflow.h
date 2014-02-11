@@ -8,16 +8,13 @@
 #ifndef REFLOW_H
 #define REFLOW_H
 
-// necessary includes
-#include "buttons.h"
+// necessary application includes
 #include "encoder.h"
-#include "celsius.h"
 
 // operating modes
 #define MODE_OFF     0
 #define MODE_ON      1
 #define MODE_SET     2
-#define MODE_UNIT_F  4  
 #define MODE_ERR     0xF0
 
 // timing for set mode
