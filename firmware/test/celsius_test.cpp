@@ -292,7 +292,7 @@ TEST_F(CelsiusTest, ToStringWorksForNegative) {
 TEST_F(CelsiusTest, ToStringWorksForFahrenheit) {
   Celsius c;
   uint8_t strLen;
-  char str[5] = {'\0', '\0', '\0', '\0', '\0'};
+  char str[6] = {'\0', '\0', '\0', '\0', '\0', '\0'};
 
   // make sure unit selectable function does celsius properly
   strLen = c.toString(TEMP_UNIT_C, str);
