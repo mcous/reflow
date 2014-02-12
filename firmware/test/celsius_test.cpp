@@ -304,7 +304,7 @@ TEST_F(CelsiusTest, ToStringWorksForFahrenheit) {
 
   // now let's try it with fahrenheit
   strLen = c.toString(TEMP_UNIT_F, str);
-  EXPECT_STREQ("32", str);
+  EXPECT_STREQ("32F", str);
   EXPECT_EQ(strLen, 2);
   for(uint8_t i=0; i<strLen; i++) {
     str[i] = '\0';
@@ -313,7 +313,7 @@ TEST_F(CelsiusTest, ToStringWorksForFahrenheit) {
   // boiling point
   c.set(100);
   strLen = c.toString(TEMP_UNIT_F, str);
-  EXPECT_STREQ("212", str);
+  EXPECT_STREQ("212F", str);
   EXPECT_EQ(strLen, 3);
   for(uint8_t i=0; i<strLen; i++) {
     str[i] = '\0';
@@ -322,7 +322,7 @@ TEST_F(CelsiusTest, ToStringWorksForFahrenheit) {
   // -40 degrees
   c.set(-40);
   strLen = c.toString(TEMP_UNIT_F, str);
-  EXPECT_STREQ("-40", str);
+  EXPECT_STREQ("-40F", str);
   EXPECT_EQ(strLen, 3);
   for(uint8_t i=0; i<strLen; i++) {
     str[i] = '\0';
@@ -331,7 +331,7 @@ TEST_F(CelsiusTest, ToStringWorksForFahrenheit) {
   // something with a decimal
   c.setScaled(-815, TEMP_POWER);
   strLen = c.toString(TEMP_UNIT_F, str);
-  EXPECT_STREQ("-334", str);
+  EXPECT_STREQ("-334F", str);
   EXPECT_EQ(strLen, 4);
   for(uint8_t i=0; i<strLen; i++) {
     str[i] = '\0';
