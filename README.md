@@ -10,9 +10,9 @@ The schematic and PCB layout files were created in [KiCad](http://www.kicad-pcb.
 
 ## firmware v0.1.1
 
-The current firmware has two basic modes: hit and hold. Hit mode takes the temperature up to the set point and then shuts off, while hold mode attempts to hold the temperature at the set-point by turning the heat on when the temperature is below the set point, and off when it's above. PID this is not. It can also display the temperature in either Celsius or Fahrenheit.
+The current firmware has two basic modes: hit and hold. Hit mode takes the temperature up to the set point and then shuts off, while hold mode attempts to hold the temperature at the set-point by turning the heat on when the temperature is below the set point, and off when it's above. This is not PID. It can also display the temperature in either Celsius or Fahrenheit.
 
-The firmware is written in C++ and compiled on OS X using the latest [CrossPack for AVR](http://www.obdev.at/products/crosspack/index.html) and live in the `firmware` directory. It'll probably compile fine on Linux; no idea about Windows, though.
+The firmware is written in C++ and compiled on OS X using the latest [CrossPack for AVR](http://www.obdev.at/products/crosspack/index.html) and lives in the `firmware` directory. It'll probably compile fine on Linux; no idea about Windows, though.
 
 ## operation
 
@@ -23,7 +23,7 @@ The firmware is written in C++ and compiled on OS X using the latest [CrossPack 
 	* In hit mode, once the temperature is hit, the heating will stop and the green light will go out, replaced by the red light
 	* In hold mode, the program will not stop unless you tell it to
 * Press the stop button to stop heating; the green light will go out and the red light will illuminate
-* Whenever the relay is open (i.e. heat is on) the red LED labeled "HOT" will illuminate
+* Whenever the relay is closed (i.e. heat is on) the red LED labeled "HOT" will illuminate
 
 ## things this board has been used for
 
