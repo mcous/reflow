@@ -1,4 +1,4 @@
-update=Thu 06 Mar 2014 03:13:14 PM CST
+update=Wed 04 Jun 2014 02:54:47 PM CDT
 version=1
 last_client=kicad
 [cvpcb]
@@ -50,8 +50,11 @@ LibName22=sparkfun
 LibName23=sharp
 [eeschema]
 version=1
+PageLayoutDescrFile=../../kicad-lib/page-layout-a.kicad_wks
+SubpartIdSeparator=0
+SubpartFirstId=65
 LibDir=../../kicad-lib/components
-NetFmtName=
+NetFmtName=PcbnewAdvanced
 RptD_X=0
 RptD_Y=100
 RptLab=1
@@ -75,5 +78,8 @@ LibName15=ftdi-ic
 LibName16=7400-ic
 LibName17=uln-ic
 LibName18=rohm
+LibName19=4000-ic
+LibName20=led
+LibName21=transistor
 [general]
 version=1
