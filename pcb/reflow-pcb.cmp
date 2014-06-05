@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by Cvpcb (2014-05-01 BZR 4839)-product   date = Wed 04 Jun 2014 04:27:35 PM CDT
+Cmp-Mod V01 Created by Cvpcb (2014-05-01 BZR 4839)-product   date = Wed 04 Jun 2014 07:00:53 PM CDT
 
 BeginCmp
 TimeStamp = /52DE3877;
@@ -39,7 +39,7 @@ BeginCmp
 TimeStamp = /52DEE5B4;
 Reference = C6;
 ValeurCmp = 22uF;
-IdModule  = ;
+IdModule  = capacitor:10mm-THRU-ALUMINUM-CAP;
 EndCmp
 
 BeginCmp
@@ -66,14 +66,14 @@ EndCmp
 BeginCmp
 TimeStamp = /52DDB9FE;
 Reference = C10;
-ValeurCmp = 22pF;
+ValeurCmp = 24pF;
 IdModule  = capacitor:0603(1608m)-CHIP-CAP;
 EndCmp
 
 BeginCmp
 TimeStamp = /52DDBA0D;
 Reference = C11;
-ValeurCmp = 22pF;
+ValeurCmp = 24pF;
 IdModule  = capacitor:0603(1608m)-CHIP-CAP;
 EndCmp
 
@@ -165,7 +165,7 @@ BeginCmp
 TimeStamp = /52DEE645;
 Reference = F1;
 ValeurCmp = 1.0A;
-IdModule  = ;
+IdModule  = resistor:1206(3216m)-CHIP-RESISTOR;
 EndCmp
 
 BeginCmp
@@ -263,7 +263,7 @@ BeginCmp
 TimeStamp = /52DF0788;
 Reference = L1;
 ValeurCmp = 1.0mH;
-IdModule  = ;
+IdModule  = inductor:SM-INDUCTOR_12.5mmX12.5mm;
 EndCmp
 
 BeginCmp
@@ -284,14 +284,14 @@ BeginCmp
 TimeStamp = /53902D92;
 Reference = LED3;
 ValeurCmp = 7-SEGMENT;
-IdModule  = ;
+IdModule  = led:7-SEGMENT-4-DIGIT-DP+CLK_DIP16_W0.4in;
 EndCmp
 
 BeginCmp
 TimeStamp = /53910BF1;
 Reference = LED4;
 ValeurCmp = 7-SEGMENT;
-IdModule  = ;
+IdModule  = led:7-SEGMENT-4-DIGIT-DP+CLK_DIP16_W0.4in;
 EndCmp
 
 BeginCmp
@@ -323,10 +323,10 @@ IdModule  = connect-thru:2x3-ARRAY_P100mil;
 EndCmp
 
 BeginCmp
-TimeStamp = /52DEDB79;
+TimeStamp = /538FE1CA;
 Reference = PS1;
-ValeurCmp = BP5039B12;
-IdModule  = sip:SIP12;
+ValeurCmp = BP5037B12;
+IdModule  = rohm:ROHM-BP5037B12_SIP10_AC-DC;
 EndCmp
 
 BeginCmp
@@ -410,189 +410,189 @@ BeginCmp
 TimeStamp = /52EAB30D;
 Reference = R1;
 ValeurCmp = 10kΩ;
-IdModule  = passive-smd:0603(1608m);
+IdModule  = resistor:0603(1608m)-CHIP-RESISTOR;
 EndCmp
 
 BeginCmp
 TimeStamp = /52DE38CC;
 Reference = R2;
 ValeurCmp = 10kΩ;
-IdModule  = passive-smd:0603(1608m);
+IdModule  = resistor:0603(1608m)-CHIP-RESISTOR;
 EndCmp
 
 BeginCmp
 TimeStamp = /5276E5BD;
 Reference = R3;
 ValeurCmp = 10kΩ;
-IdModule  = passive-smd:0603(1608m);
+IdModule  = resistor:0603(1608m)-CHIP-RESISTOR;
 EndCmp
 
 BeginCmp
 TimeStamp = /5391A400;
 Reference = R4;
 ValeurCmp = 10kΩ;
-IdModule  = passive-smd:0603(1608m);
+IdModule  = resistor:0603(1608m)-CHIP-RESISTOR;
 EndCmp
 
 BeginCmp
 TimeStamp = /52DE3886;
 Reference = R5;
 ValeurCmp = 10kΩ;
-IdModule  = passive-smd:0603(1608m);
+IdModule  = resistor:0603(1608m)-CHIP-RESISTOR;
 EndCmp
 
 BeginCmp
 TimeStamp = /52DE7504;
 Reference = R6;
 ValeurCmp = 330Ω;
-IdModule  = passive-smd:0603(1608m);
+IdModule  = resistor:0603(1608m)-CHIP-RESISTOR;
 EndCmp
 
 BeginCmp
 TimeStamp = /52768AC7;
 Reference = R7;
 ValeurCmp = 330Ω;
-IdModule  = passive-smd:0603(1608m);
+IdModule  = resistor:0603(1608m)-CHIP-RESISTOR;
 EndCmp
 
 BeginCmp
 TimeStamp = /527691D2;
 Reference = R8;
 ValeurCmp = 330Ω;
-IdModule  = passive-smd:0603(1608m);
+IdModule  = resistor:0603(1608m)-CHIP-RESISTOR;
 EndCmp
 
 BeginCmp
 TimeStamp = /527691DA;
 Reference = R9;
 ValeurCmp = 330Ω;
-IdModule  = passive-smd:0603(1608m);
+IdModule  = resistor:0603(1608m)-CHIP-RESISTOR;
 EndCmp
 
 BeginCmp
 TimeStamp = /527691E2;
 Reference = R10;
 ValeurCmp = 330Ω;
-IdModule  = passive-smd:0603(1608m);
+IdModule  = resistor:0603(1608m)-CHIP-RESISTOR;
 EndCmp
 
 BeginCmp
 TimeStamp = /527691EA;
 Reference = R11;
 ValeurCmp = 330Ω;
-IdModule  = passive-smd:0603(1608m);
+IdModule  = resistor:0603(1608m)-CHIP-RESISTOR;
 EndCmp
 
 BeginCmp
 TimeStamp = /527691F2;
 Reference = R12;
 ValeurCmp = 330Ω;
-IdModule  = passive-smd:0603(1608m);
+IdModule  = resistor:0603(1608m)-CHIP-RESISTOR;
 EndCmp
 
 BeginCmp
 TimeStamp = /527691FA;
 Reference = R13;
 ValeurCmp = 330Ω;
-IdModule  = passive-smd:0603(1608m);
+IdModule  = resistor:0603(1608m)-CHIP-RESISTOR;
 EndCmp
 
 BeginCmp
 TimeStamp = /52769202;
 Reference = R14;
 ValeurCmp = 330Ω;
-IdModule  = passive-smd:0603(1608m);
+IdModule  = resistor:0603(1608m)-CHIP-RESISTOR;
 EndCmp
 
 BeginCmp
 TimeStamp = /5276EB1C;
 Reference = R15;
 ValeurCmp = 10kΩ;
-IdModule  = passive-smd:0603(1608m);
+IdModule  = resistor:0603(1608m)-CHIP-RESISTOR;
 EndCmp
 
 BeginCmp
 TimeStamp = /5276EB22;
 Reference = R16;
 ValeurCmp = 10kΩ;
-IdModule  = passive-smd:0603(1608m);
+IdModule  = resistor:0603(1608m)-CHIP-RESISTOR;
 EndCmp
 
 BeginCmp
 TimeStamp = /5391A40C;
 Reference = R17;
 ValeurCmp = 10kΩ;
-IdModule  = passive-smd:0603(1608m);
+IdModule  = resistor:0603(1608m)-CHIP-RESISTOR;
 EndCmp
 
 BeginCmp
 TimeStamp = /5391A412;
 Reference = R18;
 ValeurCmp = 10kΩ;
-IdModule  = passive-smd:0603(1608m);
+IdModule  = resistor:0603(1608m)-CHIP-RESISTOR;
 EndCmp
 
 BeginCmp
 TimeStamp = /5275EEF2;
 Reference = R19;
 ValeurCmp = 100Ω;
-IdModule  = passive-smd:0603(1608m);
+IdModule  = resistor:0603(1608m)-CHIP-RESISTOR;
 EndCmp
 
 BeginCmp
 TimeStamp = /5275F634;
 Reference = R20;
 ValeurCmp = 330Ω;
-IdModule  = passive-smd:0603(1608m);
+IdModule  = resistor:0603(1608m)-CHIP-RESISTOR;
 EndCmp
 
 BeginCmp
 TimeStamp = /52DEE5E1;
 Reference = R21;
 ValeurCmp = 10Ω;
-IdModule  = passive-smd:1206(3216m);
+IdModule  = resistor:1206(3216m)-CHIP-RESISTOR;
 EndCmp
 
 BeginCmp
 TimeStamp = /52EAB321;
 Reference = R22;
 ValeurCmp = 10kΩ;
-IdModule  = passive-smd:0603(1608m);
+IdModule  = resistor:0603(1608m)-CHIP-RESISTOR;
 EndCmp
 
 BeginCmp
 TimeStamp = /5392B750;
 Reference = R23;
 ValeurCmp = 10kΩ;
-IdModule  = passive-smd:0603(1608m);
+IdModule  = resistor:0603(1608m)-CHIP-RESISTOR;
 EndCmp
 
 BeginCmp
 TimeStamp = /527722EA;
 Reference = R24;
 ValeurCmp = 27Ω;
-IdModule  = passive-smd:0603(1608m);
+IdModule  = resistor:0603(1608m)-CHIP-RESISTOR;
 EndCmp
 
 BeginCmp
 TimeStamp = /52772303;
 Reference = R25;
 ValeurCmp = 27Ω;
-IdModule  = passive-smd:0603(1608m);
+IdModule  = resistor:0603(1608m)-CHIP-RESISTOR;
 EndCmp
 
 BeginCmp
 TimeStamp = /52773518;
 Reference = R26;
 ValeurCmp = 330Ω;
-IdModule  = passive-smd:0603(1608m);
+IdModule  = resistor:0603(1608m)-CHIP-RESISTOR;
 EndCmp
 
 BeginCmp
 TimeStamp = /5277353B;
 Reference = R27;
 ValeurCmp = 330Ω;
-IdModule  = passive-smd:0603(1608m);
+IdModule  = resistor:0603(1608m)-CHIP-RESISTOR;
 EndCmp
 
 BeginCmp
@@ -610,6 +610,13 @@ IdModule  = sparkfun:SF-ROTARY-ENCODER;
 EndCmp
 
 BeginCmp
+TimeStamp = /538F998D;
+Reference = S1;
+ValeurCmp = RST;
+IdModule  = switch:SPST-4-PIN_6mm_sm;
+EndCmp
+
+BeginCmp
 TimeStamp = /5275D8BF;
 Reference = TC1;
 ValeurCmp = THERMOCOUPLE;
@@ -620,14 +627,14 @@ BeginCmp
 TimeStamp = /52DEE507;
 Reference = VR1;
 ValeurCmp = 240V;
-IdModule  = ;
+IdModule  = bourns:BOURNS-MOV-14DxxxK_THRU-VARISTOR;
 EndCmp
 
 BeginCmp
 TimeStamp = /52DDAB4F;
 Reference = Y1;
 ValeurCmp = 8MHz;
-IdModule  = ;
+IdModule  = crystal:ABRACON-ABM2_xtal;
 EndCmp
 
 EndListe
